@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F3D39">
+<meta name="description" content="Digital menu – browse dishes, prices and order on WhatsApp.">
+<title>Yolo Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phone-first QR menu. Tandoori-wine hero framed by a saffron arch, sticky search + category rail, single reading column (2-col desktop), floating Menu jump list + bottom order bar. */
+:root{
+  --paper:#FAF6F3; --surface:#FFFFFF; --ink:#24130F; --muted:#6E5A54; --line:#EBDDD6; --soft:#F4EAE4;
+  --brand:#7A1424; --brand-2:#5C0E1B; --on-brand:#FFF4E6; --on-brand-muted:#EBC9C1;
+  --saffron:#F4A21C; --saffron-ink:#9A5800; --on-saffron:#2A1600;
+  --leaf:#2F8F3E; --action:#7A1424; --on-action:#FFF4E6;
+  --display:"Rozha One", "Georgia", "Times New Roman", serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --sticky-h:120px;
+  --shadow:0 12px 32px -14px rgba(92,14,27,.35);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#140C0D; --surface:#1E1416; --ink:#F5ECE8; --muted:#B5A09A; --line:#342426; --soft:#2A1C1E;
+  --brand:#64101E; --brand-2:#4A0B16; --on-brand:#FFF4E6; --on-brand-muted:#DDB9B1;
+  --saffron-ink:#F7B84A; --leaf:#55BE66; --action:#F7B84A; --on-action:#2A1600;
+  --shadow:0 12px 32px -14px rgba(0,0,0,.7); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#140C0D; --surface:#1E1416; --ink:#F5ECE8; --muted:#B5A09A; --line:#342426; --soft:#2A1C1E;
+  --brand:#64101E; --brand-2:#4A0B16; --on-brand:#FFF4E6; --on-brand-muted:#DDB9B1;
+  --saffron-ink:#F7B84A; --leaf:#55BE66; --action:#F7B84A; --on-action:#2A1600;
+  --shadow:0 12px 32px -14px rgba(0,0,0,.7); color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--saffron);outline-offset:2px;border-radius:8px}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;background:var(--brand);color:var(--on-brand);overflow:hidden;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;
+  background-image:radial-gradient(circle,rgba(244,162,28,.28) 1.2px,transparent 1.7px);background-size:22px 22px;
+  mask-image:linear-gradient(160deg,#000 10%,transparent 75%);-webkit-mask-image:linear-gradient(160deg,#000 10%,transparent 75%)}
+.hero::after{content:"";position:absolute;inset:auto -10% -60% 30%;height:120%;z-index:-1;background:radial-gradient(closest-side,rgba(244,162,28,.28),transparent);pointer-events:none}
+.hero-inner{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;padding-block:34px 30px}
+.arch{position:absolute;right:-30px;top:-14px;width:300px;height:auto;z-index:-1}
+.eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:99px;background:rgba(255,255,255,.1);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.pill i{width:7px;height:7px;border-radius:50%;background:#7EE29A;box-shadow:0 0 0 3px rgba(126,226,154,.25)}
+.pill.closed i{background:#FF9585;box-shadow:0 0 0 3px rgba(255,149,133,.25)}
+.pill.veg{background:#FFFFFF;color:#1F6E2C}
+.pill.veg .vm{border-color:#2F8F3E}.pill.veg .vm::after{background:#2F8F3E}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(56px,15vw,104px);line-height:.9;margin:16px 0 4px;letter-spacing:-.01em}
+h1 .hi{display:inline-block;font-size:.34em;color:var(--saffron);letter-spacing:0;margin-left:12px;vertical-align:.55em}
+.kind{font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--saffron);margin:6px 0 0}
+.tagline{color:var(--on-brand-muted);font-size:15px;margin:10px 0 0;max-width:44ch}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.pill-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:99px;border:1px solid rgba(255,244,230,.28);color:var(--on-brand);text-decoration:none;font-weight:600;font-size:14px;transition:background .2s,border-color .2s}
+.pill-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,244,230,.55)}
+.pill-btn.primary{background:var(--saffron);color:var(--on-saffron);border-color:var(--saffron)}
+.pill-btn.primary:hover{background:#FFB238}
+.pill-btn svg{width:16px;height:16px}
+.hero-meta{display:grid;gap:10px;font-size:13px;color:var(--on-brand-muted);text-align:right;padding-bottom:4px}
+.hero-meta b{display:block;color:var(--on-brand);font-weight:600;font-size:14px}
+@media (max-width:640px){.hero-inner{grid-template-columns:1fr}.hero-meta{text-align:left;grid-template-columns:1fr 1fr}.arch{width:210px;right:-60px;opacity:.6}}
+@media (prefers-reduced-motion:no-preference){
+  .rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}.rise.d2{animation-delay:.08s}.rise.d3{animation-delay:.16s}
+  @keyframes rise{from{transform:translateY(12px)}to{transform:none}}
+}
+
+/* ---------- Sticky bar ---------- */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+.bar.stuck{border-color:var(--line);box-shadow:0 8px 22px -18px rgba(0,0,0,.45)}
+.search{position:relative;padding-top:12px}
+.search svg{position:absolute;left:14px;top:calc(50% + 6px);translate:0 -50%;width:18px;height:18px;color:var(--muted);pointer-events:none}
+.search input{width:100%;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 44px 0 42px;font-size:15px;transition:border-color .2s,box-shadow .2s}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 4px color-mix(in srgb,var(--saffron) 22%,transparent)}
+.search input::-webkit-search-cancel-button{display:none}
+.clear-search{position:absolute;right:8px;top:calc(50% + 6px);translate:0 -50%;width:30px;height:30px;border:0;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-size:14px;font-weight:600;color:var(--muted);transition:background .2s,color .2s,border-color .2s}
+.chip:hover{color:var(--ink)}
+.chip[aria-current="true"]{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+
+/* ---------- Section heads ---------- */
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 6px}
+.section-head h2{font-family:var(--display);font-weight:400;font-size:clamp(28px,6.4vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+.section-head h2 span{font-size:.5em;color:var(--saffron-ink);margin-left:10px;vertical-align:middle}
+.section-head .count{font-size:13px;color:var(--muted);white-space:nowrap}
+.cat-sub{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+
+/* ---------- Must try ---------- */
+.musttry{padding-block:28px 6px}
+.musttry .section-head{margin-bottom:14px}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:min(80%,290px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 16px 18px;margin-inline:-16px;scrollbar-width:none;overscroll-behavior-x:contain}
+.rail::-webkit-scrollbar{display:none}
+.feat{scroll-snap-align:start;scroll-margin-left:16px;position:relative;border-radius:20px;padding:18px;min-height:200px;display:flex;flex-direction:column;justify-content:space-between;color:var(--on-brand);background:var(--brand-2);overflow:hidden;box-shadow:var(--shadow);isolation:isolate}
+.feat::before{content:"";position:absolute;inset:auto -30% -50% auto;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 65%);z-index:-1;transition:transform .6s}
+.feat:hover::before{transform:scale(1.18)}
+.feat .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--saffron);font-weight:700}
+.feat h3{font-family:var(--display);font-weight:400;font-size:26px;line-height:1.05;margin:8px 0 6px}
+.feat p{margin:0;font-size:13px;color:var(--on-brand-muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.feat .row{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px}
+.feat .price{font-size:18px}
+.feat .ask{color:var(--on-brand-muted)}
+
+/* ---------- Menu ---------- */
+.menu{padding-block:14px 150px}
+.cat{padding-top:22px;scroll-margin-top:calc(var(--sticky-h) + 8px)}
+.cat + .cat{border-top:1px solid var(--line);margin-top:18px;padding-top:32px}
+.items{display:grid;grid-template-columns:1fr;column-gap:44px}
+@media (min-width:820px){.items{grid-template-columns:1fr 1fr}}
+.item{display:grid;grid-template-columns:1fr auto;gap:6px 16px;padding:15px 0;border-bottom:1px dashed var(--line);min-width:0;align-items:start}
+.item-main{min-width:0}
+.item h3{font-size:16px;font-weight:600;margin:0;line-height:1.3}
+.item p{margin:4px 0 0;color:var(--muted);font-size:13.5px;line-height:1.45}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.badge{font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:6px}
+.badge.sig{background:color-mix(in srgb,var(--saffron) 20%,transparent);color:var(--saffron-ink)}
+.badge.value{background:color-mix(in srgb,var(--leaf) 14%,transparent);color:var(--leaf)}
+.item-side{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:96px}
+.price{font-weight:700;font-size:15px;white-space:nowrap}
+.ask{font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.variants{display:inline-flex;margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--surface);gap:2px}
+.variants button{border:0;background:none;border-radius:7px;padding:5px 10px;font-size:12.5px;font-weight:600;color:var(--muted);transition:background .2s,color .2s}
+.variants button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.add{height:36px;min-width:92px;border-radius:10px;border:1.5px solid var(--action);background:var(--surface);color:var(--action);font-weight:700;font-size:13px;letter-spacing:.08em;transition:background .15s,transform .15s,color .15s}
+.add:hover{background:var(--action);color:var(--on-action)}
+.add:active{transform:scale(.96)}
+.stepper{display:grid;grid-template-columns:32px 1fr 32px;align-items:center;height:36px;min-width:92px;border-radius:10px;background:var(--saffron);color:var(--on-saffron);font-weight:700;overflow:hidden}
+.stepper button{height:100%;border:0;background:none;color:inherit;font-size:18px;line-height:1;transition:background .15s}
+.stepper button:hover{background:rgba(0,0,0,.08)}
+.stepper span{text-align:center;font-size:14px}
+.feat .add{background:transparent;color:var(--saffron);border-color:var(--saffron);min-width:80px}
+.feat .add:hover{background:var(--saffron);color:var(--on-saffron)}
+.feat .stepper{min-width:80px}
+.empty{text-align:center;padding:60px 16px;color:var(--muted)}
+.empty strong{display:block;font-family:var(--display);font-weight:400;font-size:26px;color:var(--ink);margin-bottom:6px}
+.note{margin-top:28px;padding:14px 16px;border-radius:12px;background:var(--soft);color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 18px}
+.note span{display:inline-flex;align-items:center;gap:6px}
+.vm{flex:none;display:inline-grid;place-items:center;width:14px;height:14px;border:1.5px solid var(--leaf);border-radius:3px}
+.vm::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--leaf)}
+
+/* ---------- Footer ---------- */
+footer{background:var(--brand-2);color:var(--on-brand-muted);padding-block:40px 130px;font-size:14px}
+.foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:26px}
+footer h4{font-family:var(--display);font-weight:400;color:var(--on-brand);font-size:34px;margin:0 0 4px}
+footer .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--saffron);margin-bottom:6px}
+footer p{margin:0}
+.copy{border:1px solid rgba(255,244,230,.28);background:none;color:var(--on-brand);border-radius:8px;padding:3px 9px;font-size:12px;margin-left:6px}
+.credit{margin-top:30px;padding-top:18px;border-top:1px solid rgba(255,244,230,.14);font-size:12px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+
+/* ---------- Floating menu jump ---------- */
+.fab{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:42;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px;border-radius:99px;border:0;background:var(--ink);color:var(--paper);font-weight:700;font-size:14px;box-shadow:0 14px 30px -10px rgba(0,0,0,.45);transition:bottom .35s cubic-bezier(.2,.8,.2,1),transform .2s}
+.fab:active{transform:scale(.96)}
+body.has-plate .fab{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+.jump{position:fixed;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:43;width:min(300px,calc(100vw - 32px));max-height:min(62vh,520px);overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5);padding:8px;transform-origin:bottom right;transform:scale(.92) translateY(8px);opacity:0;pointer-events:none;transition:opacity .2s,transform .25s cubic-bezier(.2,.8,.2,1)}
+body.has-plate .jump{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+.jump.open{opacity:1;transform:none;pointer-events:auto}
+.jump button{display:flex;justify-content:space-between;width:100%;border:0;background:none;padding:11px 12px;border-radius:10px;font-weight:600;font-size:14.5px;text-align:left}
+.jump button:hover,.jump button[aria-current="true"]{background:var(--soft)}
+.jump button[aria-current="true"]{color:var(--brand)}
+:root[data-theme="dark"] .jump button[aria-current="true"]{color:var(--saffron-ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .jump button[aria-current="true"]{color:var(--saffron-ink)}}
+.jump small{color:var(--muted);font-weight:500}
+.jump-scrim{position:fixed;inset:0;z-index:41}
+
+/* ---------- Plate bar + sheet ---------- */
+.platebar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:0 12px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none;transform:translateY(130%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.platebar.show{transform:none}
+.platebar button{pointer-events:auto;width:100%;max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border:0;border-radius:16px;background:var(--brand);color:var(--on-brand);box-shadow:0 16px 40px -12px rgba(0,0,0,.5);font-weight:600}
+.platebar .count-dot{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 6px;border-radius:99px;background:var(--saffron);color:var(--on-saffron);font-weight:700;font-size:13px;margin-right:10px}
+.platebar .go{display:inline-flex;align-items:center;gap:6px;color:var(--saffron)}
+.bump{animation:bump .35s ease}
+@keyframes bump{40%{transform:scale(1.04)}}
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(20,6,8,.55);opacity:0;pointer-events:none;transition:opacity .3s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;max-width:600px;margin:0 auto;background:var(--surface);border-radius:22px 22px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -20px 50px -20px rgba(0,0,0,.4)}
+.sheet.open{transform:none}
+.sheet-head{padding:10px 20px 12px;border-bottom:1px solid var(--line)}
+.grab{width:40px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+.sheet-head .t{display:flex;justify-content:space-between;align-items:center}
+.sheet-head h3{font-family:var(--display);font-weight:400;font-size:28px;margin:0}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.sheet-body{overflow-y:auto;padding:6px 20px;overscroll-behavior:contain}
+.line{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line)}
+.line .nm{min-width:0}
+.line .nm b{font-weight:600;font-size:14.5px}
+.line .nm small{display:block;color:var(--muted);font-size:12.5px}
+.line .amt{font-weight:700;min-width:64px;text-align:right}
+.line .stepper{min-width:88px;height:32px}
+.field{display:grid;gap:6px;margin:16px 0 4px}
+.field label{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.field input{height:44px;border-radius:10px;border:1px solid var(--line);background:var(--paper);padding:0 12px}
+.field input:focus{outline:none;border-color:var(--saffron)}
+.sheet-foot{padding:14px 20px 18px;border-top:1px solid var(--line);display:grid;gap:12px}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.total span{color:var(--muted);font-size:13px}
+.total b{font-size:22px}
+.actions{display:grid;grid-template-columns:auto 1fr;gap:10px}
+.btn{height:50px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-weight:700;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--ink)}
+.btn.wa{background:#1FA855;border-color:#1FA855;color:#fff}
+.btn.wa:hover{background:#199148}
+.btn svg{width:18px;height:18px}
+/* ---------- Photos ---------- */
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3}
+.hero-shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(100deg,var(--brand) 32%,color-mix(in srgb,var(--brand) 72%,transparent) 62%,color-mix(in srgb,var(--brand) 38%,transparent))}
+@media (max-width:640px){.hero-shade{background:linear-gradient(180deg,color-mix(in srgb,var(--brand) 62%,transparent) 0%,color-mix(in srgb,var(--brand) 82%,transparent) 45%,var(--brand) 85%)}}
+.item .price{display:block;margin-top:3px}
+.item-side{align-items:center;gap:0;width:120px;min-width:120px}
+.thumb{width:120px;height:112px;border-radius:16px;overflow:hidden;background:var(--soft);box-shadow:0 8px 18px -12px rgba(36,19,15,.45)}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.item:hover .thumb img{transform:scale(1.06)}
+.item .ctl{position:relative;z-index:1;margin-top:-20px}
+.item .ctl .add{background:var(--surface);box-shadow:0 6px 14px -8px rgba(0,0,0,.4)}
+.item.noimg .thumb{display:none}
+.item.noimg .ctl{margin-top:4px}
+.item.noimg .item-side{width:auto;min-width:96px;align-items:flex-end}
+.feat .feat-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.feat:hover .feat-img{transform:scale(1.06)}
+.feat .feat-shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(30,6,10,.15) 0%,rgba(30,6,10,.55) 45%,rgba(30,6,10,.92) 100%)}
+.feat.noimg .feat-shade{display:none}
+.feat{min-height:250px}
+.feat .tag{display:inline-block;background:rgba(20,6,8,.55);padding:4px 8px;border-radius:6px;backdrop-filter:blur(4px)}
+.feat p{color:#F1DDD6}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition-duration:.01ms!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<header class="hero">
+  <img class="hero-bg" src="https://images.pexels.com/photos/35539324/pexels-photo-35539324.jpeg?auto=compress&cs=tinysrgb&w=1400" alt="" aria-hidden="true" fetchpriority="high" onerror="this.remove()">
+  <div class="hero-shade" aria-hidden="true"></div>
+  <svg class="arch" viewBox="0 0 300 360" fill="none" aria-hidden="true">
+    <path d="M30 360V170C30 95 85 45 150 10C215 45 270 95 270 170V360" stroke="#F4A21C" stroke-opacity=".6" stroke-width="1.5"/>
+    <path d="M55 360V178C55 115 100 72 150 42C200 72 245 115 245 178V360" stroke="#F4A21C" stroke-opacity=".38" stroke-width="1.2"/>
+    <path d="M80 360V186C80 135 115 100 150 76C185 100 220 135 220 186V360" stroke="#F4A21C" stroke-opacity=".22" stroke-width="1"/>
+    <circle cx="150" cy="4" r="3" fill="#F4A21C" fill-opacity=".8"/>
+  </svg>
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow rise">
+        <span class="pill veg"><span class="vm" aria-hidden="true"></span>100% Pure Veg</span>
+        <span class="pill" id="status"><i></i><span id="statusText">Open now</span></span>
+      </div>
+      <h1 class="rise d2"><span id="rName">Yolo</span><span class="hi" id="rNameHi" lang="hi">योलो</span></h1>
+      <p class="kind rise d2" id="kind"></p>
+      <p class="tagline rise d3" id="tagline"></p>
+      <div class="hero-actions rise d3">
+        <a class="pill-btn primary" href="#menu" id="browseBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Browse menu</a>
+        <a class="pill-btn" id="callBtn" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Call</a>
+        <a class="pill-btn" id="mapBtn" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Directions</a>
+      </div>
+    </div>
+    <div class="hero-meta rise d3">
+      <div><b id="hoursText" class="num"></b>Every day</div>
+      <div><b id="dishCount" class="num"></b>Dine-in · Takeaway</div>
+    </div>
+  </div>
+</header>
+
+<div class="bar" id="bar">
+  <div class="wrap">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search paneer, momos, thali…" autocomplete="off" aria-label="Search dishes">
+      <button class="clear-search" id="clearQ" aria-label="Clear search" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <nav class="chips" id="chips" aria-label="Menu categories"></nav>
+  </div>
+</div>
+
+<main id="menu">
+  <section class="musttry wrap" id="mustTry" aria-labelledby="mtTitle">
+    <div class="section-head"><h2 id="mtTitle">Must try<span lang="hi">ज़रूर चखें</span></h2><span class="count">Swipe →</span></div>
+    <div class="rail" id="rail"></div>
+  </section>
+  <div class="wrap menu" id="menuList"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div><h4 id="fName">Yolo</h4><p id="fTag"></p></div>
+      <div><div class="lbl">Visit</div><p id="fAddr"></p></div>
+      <div><div class="lbl">Hours</div><p class="num" id="fHours"></p></div>
+      <div><div class="lbl">Call</div><p><span class="num" id="fPhone"></span><button class="copy" id="copyPhone">Copy</button></p></div>
+    </div>
+    <div class="credit"><span>© <span id="yr"></span> <span id="cName"></span>. All rights reserved.</span><span>Food photos from Pexels, for illustration · Digital menu by OneT Digital Solutions</span></div>
+  </div>
+</footer>
+
+<div class="jump-scrim" id="jumpScrim" hidden></div>
+<nav class="jump" id="jump" aria-label="Jump to category"></nav>
+<button class="fab" id="fab" aria-expanded="false" aria-controls="jump">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Menu</button>
+
+<div class="platebar" id="plateBar"><button id="openPlate" aria-label="View your order">
+  <span><span class="count-dot num" id="pbCount">0</span><span id="pbLabel">items</span> · <span class="num" id="pbTotal">₹0</span></span>
+  <span class="go">View order <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+</button></div>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
+  <div class="sheet-head"><div class="grab"></div>
+    <div class="t"><h3 id="sheetTitle">Your order</h3>
+      <button class="icon-btn" id="closeSheet" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  </div>
+  <div class="sheet-body">
+    <div id="lines"></div>
+    <div class="field"><label for="tableNo">Table number (optional)</label><input id="tableNo" inputmode="numeric" placeholder="e.g. 7" autocomplete="off"></div>
+    <div class="field"><label for="orderNote">Note for the kitchen (optional)</label><input id="orderNote" placeholder="Less spicy, extra butter…" autocomplete="off"></div>
+  </div>
+  <div class="sheet-foot">
+    <div class="total"><span id="totalLbl">Subtotal · taxes as applicable</span><b class="num" id="sheetTotal">₹0</b></div>
+    <div class="actions">
+      <button class="btn" id="clearPlate">Clear</button>
+      <a class="btn wa" id="waBtn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1s-.5-.1-.7.1-.8 1-1 1.2-.4.2-.6.1a8.2 8.2 0 0 1-4-3.5c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.8.4 3.5 3.5 0 0 0-1.1 2.6 6.1 6.1 0 0 0 1.3 3.2 13.9 13.9 0 0 0 5.3 4.7c2 .8 2.7.9 3.7.7a3.1 3.1 0 0 0 2-1.4 2.5 2.5 0 0 0 .2-1.4c-.1-.2-.3-.3-.6-.4zM12 21.8a9.9 9.9 0 0 1-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4A9.9 9.9 0 1 1 12 21.8zm8.4-18.3A11.8 11.8 0 0 0 1.8 17.8L.1 24l6.4-1.7A11.8 11.8 0 0 0 12 23.7 11.8 11.8 0 0 0 20.4 3.5z"/></svg>
+        Send order on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ================= EDIT RESTAURANT DETAILS HERE ================= */
+const CONFIG = {
+  name: "Yolo",
+  nameHi: "योलो",
+  kind: "Pure Veg Family Restaurant",
+  cuisine: "Punjabi · Chaap · Momos · Chinese · Pizza",
+  tagline: "Punjabi tadka, smoky tandoori chaap, momos and pizzas. Fresh from our kitchen, all pure veg.",
+  address: "Add restaurant address here",
+  phone: "+91 98765 43210",
+  whatsapp: "",          // e.g. "919876543210" – leave empty to let guests pick a chat
+  mapsUrl: "https://maps.google.com/?q=Yolo+restaurant",
+  open: "08:00", close: "23:00"
+};
+/* p: number, {Half:x, Full:y}, or null (shows "Ask staff"). tags: sig (Yolo special) | value (meal / combo) */
+const MENU = [
+  { id:"thali", name:"Thali", hi:"थाली", sub:"Complete meals on one plate.", items:[
+    {n:"Sadi / Plain Thali", d:"Dal Fry + Mix Veg + Raita + 2 Roti + Half Rice", p:120, tags:["value"]},
+    {n:"Special Thali", d:"Matar Paneer + Curry + Mix Veg + 2 Roti + Half Rice", p:180, tags:["value"]},
+    {n:"Deluxe Thali", d:"Shahi Paneer + Dal Makhani + Mix Veg + Raita + 3 Roti + Half Rice", p:210, tags:["value"]},
+    {n:"Yolo Special Thali", d:"Kadai Paneer + Dal Makhani + Mix Veg + Any One Dish + Raita + Papad + Jeera Rice + Butter Naan + Cold Drink", p:320, tags:["sig","value"]}
+  ]},
+  { id:"breakfast", name:"Breakfast", hi:"नाश्ता", sub:"Tandoor-fresh parathas, served with curd and pickle.", items:[
+    {n:"Full Breakfast", d:"2 Paratha + Tea or Curd + Butter, or 4 Roti + Veg + Curd or Tea", p:120, tags:["value"]},
+    {n:"Aloo Paratha", p:40}, {n:"Gobhi Paratha", p:50}, {n:"Pyaz Paratha", p:50}, {n:"Mooli Paratha", p:50},
+    {n:"Mix Paratha", p:60}, {n:"Paneer Paratha", p:70},
+    {n:"Aloo Naan Chole", p:100}, {n:"Gobhi Naan Chole", p:150}, {n:"Mix Naan Chole", p:160}, {n:"Paneer Naan Chole", p:180},
+    {n:"Sandwich", p:null}
+  ]},
+  { id:"combo", name:"Combos", hi:"कॉम्बो", items:[
+    {n:"Tawa Chaap + Lachha Paratha", p:150, tags:["value"]},
+    {n:"Tawa Paneer + Butter Naan", p:200, tags:["value"]},
+    {n:"Chilli Chaap + Tandoori Roti", p:160, tags:["value"]},
+    {n:"Fried Rice + Chilly Paneer", p:180, tags:["value"]},
+    {n:"Kulcha with Gravy", p:140, tags:["value"]},
+    {n:"Biryani with Raita", p:170, tags:["value"]}
+  ]},
+  { id:"chaap", name:"Tandoori Stuffed Chaap", hi:"चाप", sub:"Soya chaap from the tandoor. Half and full plates.", items:[
+    {n:"Special Yolo Chaap", d:"Our house special chaap.", p:null, tags:["sig"]},
+    {n:"Masala Chaap", p:null}, {n:"Malai Chaap", p:null}, {n:"Afghani Chaap", p:null}, {n:"Chilli Chaap", p:null},
+    {n:"Tawa Chaap", p:null}, {n:"Punjabi Chaap", p:null}, {n:"Butter Chaap", p:null}, {n:"Chatpata Chaap", p:null}, {n:"Gravy Chaap", p:null}
+  ]},
+  { id:"momos", name:"Momo Special", hi:"मोमोज़", items:[
+    {n:"Tandoori Malai Momo", d:"Creamy malai momos finished in the tandoor.", p:null, tags:["sig"]},
+    {n:"Veg Steam Momo", p:null}, {n:"Fry Momo", p:null}, {n:"Steam Paneer Momo", p:null}, {n:"Veg Tandoori Momo", p:null},
+    {n:"Fry Kurkure Momo", p:null}, {n:"Paneer Kurkure Momo", p:null}, {n:"Tandoori Paneer Momo", p:null},
+    {n:"Veg Malai Momo", p:null}, {n:"Paneer Malai Momo", p:null}, {n:"Schezwan Veg Momo", p:null}, {n:"Paneer Jhol Momo", p:null}
+  ]},
+  { id:"chilly", name:"Chilly's Special", hi:"चिली", sub:"Indo-Chinese, tossed hot in the wok.", items:[
+    {n:"Paneer Chilly", p:null, tags:["sig"]}, {n:"Chilly Paneer Dry", p:null}, {n:"Chilly Paneer Gravy", p:null},
+    {n:"Mushroom Chilly", p:null}, {n:"Chilly Potato", p:null}, {n:"Chilly Baby Corn", p:null}, {n:"Chilly Veg", p:null}
+  ]},
+  { id:"noodles", name:"Noodles", hi:"नूडल्स", items:[
+    {n:"Veg Noodles", p:null}, {n:"Hakka Noodles", p:null}, {n:"Singapuri Noodles", p:null},
+    {n:"Chilli Garlic Noodles", p:null}, {n:"Paneer Noodles", p:null}, {n:"Mushroom Noodles", p:null}
+  ]},
+  { id:"soups", name:"Soups", hi:"सूप", items:[
+    {n:"Hot & Sour Soup", p:null}, {n:"Tomato Soup", p:null}, {n:"Veg Corn Soup", p:null}, {n:"Paneer Hot & Sour Soup", p:null}
+  ]},
+  { id:"paneer", name:"Paneer Dishes", hi:"पनीर", sub:"Half / Full", items:[
+    {n:"Paneer Tikka Butter Masala", d:"Tandoori paneer tikka in a rich butter masala gravy.", p:{Half:150, Full:300}, tags:["sig"]},
+    {n:"Shahi Paneer", p:{Half:120, Full:210}}, {n:"Kadhai Paneer", p:{Half:140, Full:220}},
+    {n:"Matar Paneer", p:{Half:120, Full:200}}, {n:"Palak Paneer", p:{Half:130, Full:210}},
+    {n:"Paneer Do Pyaza", p:{Half:140, Full:220}}, {n:"Paneer Bhurji", p:{Half:140, Full:250}},
+    {n:"Paneer Butter Masala", p:{Half:140, Full:280}}, {n:"Paneer Makhani", p:250},
+    {n:"Chilly Paneer", p:{Half:160, Full:260}}
+  ]},
+  { id:"dal", name:"Tadka Punjab Da", hi:"दाल", sub:"Dals and rajma. Half / Full", items:[
+    {n:"Dal Makhani", d:"Black urad, slow-cooked with butter and cream.", p:{Half:75, Full:150}},
+    {n:"Rajma Masala", p:{Half:75, Full:150}}, {n:"Dal Fry (Urad / Chana)", p:{Half:65, Full:130}},
+    {n:"Dal Mix", p:{Half:90, Full:180}}, {n:"Kadhi Pakoda", p:{Half:70, Full:140}}
+  ]},
+  { id:"veg", name:"Vegetables", hi:"सब्ज़ी", items:[
+    {n:"Bhindi", p:{Half:70, Full:140}}, {n:"Bhindi Masala", p:{Half:80, Full:160}}, {n:"Aloo Palak", p:{Half:80, Full:160}},
+    {n:"Aloo Gobhi", p:140}, {n:"Aloo Gobhi Masala", p:150}, {n:"Saag Sarson", p:150}, {n:"Malai Kofta", p:220},
+    {n:"Mix Vegetable", p:150}, {n:"Jeera Aloo", p:120}, {n:"Aloo Matar", p:150}, {n:"Baingan Bharta", p:160}
+  ]},
+  { id:"rice", name:"Rice", hi:"चावल", items:[
+    {n:"Plain Rice", p:80}, {n:"Jeera Rice", p:100}, {n:"Paneer Pulao", p:190},
+    {n:"Fried Rice", d:"Served with curd.", p:200}, {n:"Veg Biryani with Raita", p:200}
+  ]},
+  { id:"roti", name:"Roti & Paratha", hi:"रोटी", items:[
+    {n:"Tawa Roti Plain", p:12}, {n:"Tawa Roti Butter", p:20}, {n:"Tawa Paratha", p:30}, {n:"Tawa Ajwain Paratha", p:40},
+    {n:"Tandoori Plain Roti", p:12}, {n:"Tandoori Butter Roti", p:15}, {n:"Tandoori Lachha Paratha", p:40},
+    {n:"Tandoori Butter Naan", d:"3 pieces", p:45}, {n:"Tandoori Mirchi Paratha", p:50}, {n:"Tandoori Stuffed Naan", p:60},
+    {n:"Tandoori Cheese Paratha", p:80}
+  ]},
+  { id:"raita", name:"Raita & Salad", hi:"रायता", items:[
+    {n:"Plain Dahi", p:40}, {n:"Boondi Raita", p:60}, {n:"Kheera (Cucumber) Raita", p:70}, {n:"Onion Raita", p:80}, {n:"Beetroot Raita", p:80},
+    {n:"Green Salad", p:50}, {n:"Plain Papad", p:10}, {n:"Fry Papad", p:20}, {n:"Masala Papad", p:25}
+  ]},
+  { id:"pizza", name:"Yolo Special Pizza", hi:"पिज़्ज़ा", items:[
+    {n:"Yolo Special Pizza", d:"8 slices, loaded with our house toppings.", p:null, tags:["sig"]},
+    {n:"Veg Loaded Pizza", p:null}, {n:"Cheese Corn Pizza", p:null}, {n:"Paneer Pizza", p:null},
+    {n:"Double Paneer Pizza", p:null}, {n:"Mushroom Pizza", p:null}
+  ]},
+  { id:"burger", name:"Burgers", hi:"बर्गर", items:[
+    {n:"Aloo Tikki Burger", p:null}, {n:"Veg Burger", p:null}, {n:"Cheese Burger", p:null},
+    {n:"Noodles Burger", p:null}, {n:"Double Tikki Burger", p:null}, {n:"Mushroom Burger", p:null}
+  ]},
+  { id:"pasta", name:"Pasta", hi:"पास्ता", items:[
+    {n:"Red Sauce Pasta", p:110}, {n:"White Sauce Pasta", p:120}, {n:"Mix Sauce Pasta", p:130},
+    {n:"Mushroom Pasta", p:140}, {n:"Paneer Pasta", p:150}, {n:"Cheesy Pasta", p:150}
+  ]},
+  { id:"chaat", name:"Tikki Chaat", hi:"चाट", items:[
+    {n:"Tikki with Chhole", d:"2 pieces", p:null}, {n:"Samosa with Chhole", p:null}, {n:"Kulcha Chhole", p:null}
+  ]},
+  { id:"drinks", name:"Beverages", hi:"पेय", items:[
+    {n:"Tea", p:20}, {n:"Black Tea", p:15}, {n:"Hot Coffee", p:30}, {n:"Black Coffee", p:25}, {n:"Cold Coffee", p:50},
+    {n:"Sweet Lassi", p:null}, {n:"Salty Lassi", p:null}, {n:"Water Bottle", d:"At MRP", p:null}
+  ]}
+];
+/* Dish photos: Pexels photo ids (free licence). Replace with the restaurant's own photos any time. */
+const PHOTOS = {
+  "Sadi / Plain Thali":35008222, "Special Thali":29148133, "Deluxe Thali":32797056, "Yolo Special Thali":35539324,
+  "Full Breakfast":28885201, "Aloo Paratha":20408462, "Gobhi Paratha":33428723, "Pyaz Paratha":35066810, "Mooli Paratha":35079296,
+  "Mix Paratha":35066811, "Paneer Paratha":12737919, "Aloo Naan Chole":7364662, "Gobhi Naan Chole":29066704, "Mix Naan Chole":9287032,
+  "Paneer Naan Chole":31306976, "Sandwich":9240536,
+  "Tawa Chaap + Lachha Paratha":20446402, "Tawa Paneer + Butter Naan":5127316, "Chilli Chaap + Tandoori Roti":12737800,
+  "Fried Rice + Chilly Paneer":31783383, "Kulcha with Gravy":20446413, "Biryani with Raita":9609848,
+  "Special Yolo Chaap":3928854, "Masala Chaap":20395267, "Malai Chaap":8414639, "Afghani Chaap":28674559, "Chilli Chaap":29631461,
+  "Tawa Chaap":30858402, "Punjabi Chaap":30858420, "Butter Chaap":28674541, "Chatpata Chaap":20395267, "Gravy Chaap":28674541,
+  "Tandoori Malai Momo":18803174, "Veg Steam Momo":33670191, "Fry Momo":5409009, "Steam Paneer Momo":18803177, "Veg Tandoori Momo":39231335,
+  "Fry Kurkure Momo":28445591, "Paneer Kurkure Momo":28445591, "Tandoori Paneer Momo":37374102, "Veg Malai Momo":36173262,
+  "Paneer Malai Momo":13072972, "Schezwan Veg Momo":3911228, "Paneer Jhol Momo":3926123,
+  "Paneer Chilly":29631468, "Chilly Paneer Dry":29631461, "Chilly Paneer Gravy":28674530, "Mushroom Chilly":8250339,
+  "Chilly Potato":11485199, "Chilly Baby Corn":5695587, "Chilly Veg":29631489,
+  "Veg Noodles":3926135, "Hakka Noodles":2764905, "Singapuri Noodles":17184357, "Chilli Garlic Noodles":38579055,
+  "Paneer Noodles":27135617, "Mushroom Noodles":36771456,
+  "Hot & Sour Soup":27039861, "Tomato Soup":12338625, "Veg Corn Soup":13788766, "Paneer Hot & Sour Soup":27039861,
+  "Paneer Tikka Butter Masala":30858420, "Shahi Paneer":9609838, "Kadhai Paneer":12737816, "Matar Paneer":9609842,
+  "Palak Paneer":8625948, "Paneer Do Pyaza":12737805, "Paneer Bhurji":35993886, "Paneer Butter Masala":11188417,
+  "Paneer Makhani":11115801, "Chilly Paneer":29631468,
+  "Dal Makhani":28674555, "Rajma Masala":12737912, "Dal Fry (Urad / Chana)":30203314, "Dal Mix":33379362, "Kadhi Pakoda":17200447,
+  "Bhindi":6309779, "Bhindi Masala":14242049, "Aloo Palak":13513758, "Aloo Gobhi":11663143, "Aloo Gobhi Masala":2116093,
+  "Saag Sarson":5031947, "Malai Kofta":36343375, "Mix Vegetable":19969210, "Jeera Aloo":1051399, "Aloo Matar":29684979, "Baingan Bharta":15108368,
+  "Plain Rice":8956718, "Jeera Rice":28674713, "Paneer Pulao":35552983, "Fried Rice":32489477, "Veg Biryani with Raita":7593267,
+  "Tawa Roti Plain":5589943, "Tawa Roti Butter":5434693, "Tawa Paratha":37555450, "Tawa Ajwain Paratha":38834853,
+  "Tandoori Plain Roti":36840077, "Tandoori Butter Roti":12737800, "Tandoori Lachha Paratha":20446390, "Tandoori Butter Naan":38163958,
+  "Tandoori Mirchi Paratha":38834855, "Tandoori Stuffed Naan":16851842, "Tandoori Cheese Paratha":12737919,
+  "Plain Dahi":34377266, "Boondi Raita":29699511, "Kheera (Cucumber) Raita":35552954, "Onion Raita":35552952, "Beetroot Raita":32235866,
+  "Green Salad":8992837, "Plain Papad":34507153, "Fry Papad":34739831, "Masala Papad":34347890,
+  "Yolo Special Pizza":8609973, "Veg Loaded Pizza":37919566, "Cheese Corn Pizza":31450854, "Paneer Pizza":11974635,
+  "Double Paneer Pizza":11974636, "Mushroom Pizza":29699537,
+  "Aloo Tikki Burger":20722055, "Veg Burger":28396820, "Cheese Burger":28636771, "Noodles Burger":5639459,
+  "Double Tikki Burger":5555667, "Mushroom Burger":7786565,
+  "Red Sauce Pasta":5419339, "White Sauce Pasta":31109622, "Mix Sauce Pasta":29173117, "Mushroom Pasta":1487511,
+  "Paneer Pasta":34728280, "Cheesy Pasta":34363091,
+  "Tikki with Chhole":27359372, "Samosa with Chhole":9027521, "Kulcha Chhole":9287035,
+  "Tea":37186989, "Black Tea":15435922, "Hot Coffee":459489, "Black Coffee":28836959, "Cold Coffee":35229818,
+  "Sweet Lassi":8917283, "Salty Lassi":8489749, "Water Bottle":31699476
+};
+const photo = (id, w, h) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w}&h=${h}&fit=crop`;
+/* Cards in the swipe row at the top */
+const MUST_TRY = ["yolo-special-thali","special-yolo-chaap","tandoori-malai-momo","paneer-tikka-butter-masala","yolo-special-pizza","deluxe-thali"];
+/* ================================================================ */
+
+const $ = s => document.querySelector(s);
+const rupee = n => "₹" + n.toLocaleString("en-IN");
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const TAGS = {sig:["sig","Yolo special"], value:["value","Full meal"]};
+
+const ITEMS = {};
+MENU.forEach(c => c.items.forEach(it => {
+  let id = slug(it.n); while (ITEMS[id]) id += "-x"; it.id = id; it.cat = c.id;
+  it.vars = (it.p && typeof it.p === "object") ? Object.keys(it.p) : null;
+  it.sel = it.vars ? it.vars[it.vars.length-1] : null; it.img = PHOTOS[it.n] || null; ITEMS[id] = it;
+}));
+const priceOf = (it, v) => it.vars ? it.p[v] : it.p;
+const priceHTML = it => { const p = priceOf(it, it.sel); return p == null ? `<span class="ask">Ask staff</span>` : rupee(p); };
+
+function fmt12(t){ const [h,m]=t.split(":").map(Number); const ap=h>=12?"PM":"AM"; return `${((h+11)%12)+1}${m?":"+String(m).padStart(2,"0"):""} ${ap}`; }
+function fillConfig(){
+  const hours = `${fmt12(CONFIG.open)} – ${fmt12(CONFIG.close)}`;
+  $("#rName").textContent = CONFIG.name; $("#rNameHi").textContent = CONFIG.nameHi;
+  $("#kind").textContent = CONFIG.kind; $("#tagline").textContent = CONFIG.tagline;
+  $("#hoursText").textContent = hours; $("#dishCount").textContent = Object.keys(ITEMS).length + " dishes";
+  $("#callBtn").href = "tel:" + CONFIG.phone.replace(/\s/g,""); $("#mapBtn").href = CONFIG.mapsUrl;
+  $("#fName").textContent = CONFIG.name; $("#fTag").textContent = CONFIG.kind + " · " + CONFIG.cuisine;
+  $("#fAddr").textContent = CONFIG.address; $("#fHours").textContent = hours + ", all days";
+  $("#fPhone").textContent = CONFIG.phone; $("#yr").textContent = new Date().getFullYear(); $("#cName").textContent = CONFIG.name;
+  const now = new Date(), mins = now.getHours()*60+now.getMinutes();
+  const [oh,om]=CONFIG.open.split(":").map(Number), [ch,cm]=CONFIG.close.split(":").map(Number);
+  const o=oh*60+om, c=ch*60+cm, isOpen = c>o ? (mins>=o && mins<c) : (mins>=o || mins<c);
+  $("#status").classList.toggle("closed", !isOpen);
+  $("#statusText").textContent = isOpen ? `Open · till ${fmt12(CONFIG.close)}` : `Closed · opens ${fmt12(CONFIG.open)}`;
+}
+
+// ---------- cart ----------
+let cart = {};
+try { cart = JSON.parse(localStorage.getItem("yolo-plate") || "{}") || {}; } catch(e) { cart = {}; }
+Object.keys(cart).forEach(k => { if (!ITEMS[k.split("|")[0]]) delete cart[k]; });
+const save = () => { try { localStorage.setItem("yolo-plate", JSON.stringify(cart)); } catch(e){} };
+const key = (id, v) => id + "|" + (v || "");
+function change(id, v, d){
+  const k = key(id, v); cart[k] = (cart[k]||0) + d; if (cart[k] <= 0) delete cart[k];
+  save(); refreshControls(id); refreshBar(true); if ($("#sheet").classList.contains("open")) renderLines();
+}
+function controlHTML(it){
+  const q = cart[key(it.id, it.sel)] || 0;
+  return q ? `<div class="stepper" role="group" aria-label="${esc(it.n)} quantity"><button data-act="dec" aria-label="Remove one">−</button><span class="num">${q}</span><button data-act="inc" aria-label="Add one">+</button></div>`
+           : `<button class="add" data-act="inc" aria-label="Add ${esc(it.n)}">ADD</button>`;
+}
+function refreshControls(id){
+  const it = ITEMS[id];
+  document.querySelectorAll(`[data-ctl="${id}"]`).forEach(el => el.innerHTML = controlHTML(it));
+  document.querySelectorAll(`[data-price="${id}"]`).forEach(el => el.innerHTML = priceHTML(it));
+}
+function totals(){ let n=0,t=0,ask=0; for (const k in cart){ const [id,v]=k.split("|"), p=priceOf(ITEMS[id], v||null); n+=cart[k]; if (p==null) ask+=cart[k]; else t+=cart[k]*p; } return {n,t,ask}; }
+function refreshBar(bump){
+  const {n,t,ask} = totals();
+  $("#pbCount").textContent = n; $("#pbLabel").textContent = n===1 ? "item" : "items"; $("#pbTotal").textContent = rupee(t) + (ask ? "+" : "");
+  $("#plateBar").classList.toggle("show", n>0); document.body.classList.toggle("has-plate", n>0);
+  if (bump && n>0){ const b=$("#openPlate"); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
+}
+
+// ---------- render ----------
+const badges = it => (it.tags||[]).map(t => `<span class="badge ${TAGS[t][0]}">${TAGS[t][1]}</span>`).join("");
+function itemHTML(it){
+  const vars = it.vars ? `<div class="variants" role="group" aria-label="Portion">${it.vars.map(v=>`<button data-var="${v}" aria-pressed="${v===it.sel}">${v} <span class="num">${rupee(it.p[v])}</span></button>`).join("")}</div>` : "";
+  const img = it.img ? `<div class="thumb"><img src="${photo(it.img,260,240)}" alt="${esc(it.n)}" width="120" height="112" loading="lazy" decoding="async" onerror="this.closest('.item').classList.add('noimg')"></div>` : "";
+  return `<article class="item${it.img ? "" : " noimg"}" data-id="${it.id}">
+    <div class="item-main"><h3>${esc(it.n)}</h3><span class="price num" data-price="${it.id}">${priceHTML(it)}</span>${it.d ? `<p>${esc(it.d)}</p>` : ""}${vars}${it.tags ? `<div class="badges">${badges(it)}</div>` : ""}</div>
+    <div class="item-side">${img}<div class="ctl" data-ctl="${it.id}">${controlHTML(it)}</div></div>
+  </article>`;
+}
+function render(){
+  $("#chips").innerHTML = MENU.map(c => `<button class="chip" data-cat="${c.id}">${c.name}</button>`).join("");
+  $("#jump").innerHTML = MENU.map(c => `<button data-jump="${c.id}">${c.name}<small class="num">${c.items.length}</small></button>`).join("");
+  $("#menuList").innerHTML = MENU.map(c => `<section class="cat" id="${c.id}" aria-labelledby="h-${c.id}">
+      <div class="section-head"><h2 id="h-${c.id}">${c.name}<span lang="hi">${c.hi}</span></h2><span class="count num" data-count="${c.id}"></span></div>
+      ${c.sub ? `<p class="cat-sub">${c.sub}</p>` : ""}
+      <div class="items">${c.items.map(itemHTML).join("")}</div></section>`).join("")
+    + `<div class="empty" id="empty" hidden><strong>Nothing found</strong><span id="emptyText"></span></div>
+       <div class="note" id="note"><span><span class="vm" aria-hidden="true"></span>100% pure vegetarian kitchen</span><span>All prices in ₹ · Government taxes as applicable</span><span>“Ask staff” items are priced at the counter</span><span>Photos are for illustration; actual serving may vary</span></div>`;
+  const glows = ["rgba(244,162,28,.6)","rgba(255,110,80,.5)","rgba(255,205,90,.5)","rgba(240,120,150,.45)","rgba(130,200,120,.42)"];
+  $("#rail").innerHTML = MUST_TRY.filter(id => ITEMS[id]).map((id,i) => { const it = ITEMS[id];
+    return `<article class="feat${it.img ? "" : " noimg"}" data-id="${id}" style="--glow:${glows[i%glows.length]}">
+      ${it.img ? `<img class="feat-img" src="${photo(it.img,620,500)}" alt="" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('noimg');this.remove()"><div class="feat-shade"></div>` : ""}
+      <div><div class="tag">${(it.tags||[]).includes("sig") ? "Yolo special" : "Full meal"}</div><h3>${esc(it.n)}</h3>${it.d?`<p>${esc(it.d)}</p>`:""}</div>
+      <div class="row"><span class="price num" data-price="${id}">${priceHTML(it)}</span><div data-ctl="${id}">${controlHTML(it)}</div></div></article>`; }).join("");
+}
+
+// ---------- filter ----------
+function applyFilter(){
+  const raw = $("#q").value.trim(), q = raw.toLowerCase(); let any = false;
+  $("#clearQ").hidden = !q;
+  MENU.forEach(c => {
+    let shown = 0;
+    c.items.forEach(it => {
+      const ok = !q || (it.n+" "+(it.d||"")+" "+c.name).toLowerCase().includes(q);
+      document.querySelector(`#menuList .item[data-id="${it.id}"]`).hidden = !ok; if (ok) shown++;
+    });
+    $("#"+c.id).hidden = !shown;
+    document.querySelector(`.chip[data-cat="${c.id}"]`).hidden = !shown;
+    document.querySelector(`[data-jump="${c.id}"]`).hidden = !shown;
+    $(`[data-count="${c.id}"]`).textContent = `${shown} ${shown===1?"dish":"dishes"}`;
+    if (shown) any = true;
+  });
+  $("#mustTry").hidden = !!q;
+  $("#empty").hidden = any; $("#emptyText").textContent = `No dishes match “${raw}”. Try another word.`;
+  $("#note").hidden = !any;
+  updateSpy();
+}
+
+// ---------- sticky + scrollspy ----------
+function measure(){ document.documentElement.style.setProperty("--sticky-h", $("#bar").offsetHeight + "px"); }
+let activeCat = null;
+function setActive(id){
+  if (id === activeCat) return; activeCat = id;
+  document.querySelectorAll(".chip").forEach(ch => ch.setAttribute("aria-current", ch.dataset.cat === id));
+  document.querySelectorAll("[data-jump]").forEach(b => b.setAttribute("aria-current", b.dataset.jump === id));
+  const chip = document.querySelector(`.chip[data-cat="${id}"]`), rail = $("#chips");
+  if (chip) rail.scrollTo({left: chip.offsetLeft - rail.clientWidth/2 + chip.clientWidth/2, behavior: reduce ? "auto" : "smooth"});
+}
+function updateSpy(){
+  const y = $("#bar").offsetHeight + 40; let cur = null;
+  MENU.forEach(c => { const el = $("#"+c.id); if (!el.hidden && el.getBoundingClientRect().top <= y) cur = c.id; });
+  if (!cur){ const first = MENU.find(c => !$("#"+c.id).hidden); cur = first ? first.id : null; }
+  setActive(cur);
+  $("#bar").classList.toggle("stuck", $("#bar").getBoundingClientRect().top <= 1 && scrollY > 10);
+}
+let ticking = false;
+addEventListener("scroll", () => { if (!ticking){ ticking = true; requestAnimationFrame(() => { updateSpy(); ticking = false; }); } }, {passive:true});
+addEventListener("resize", () => { measure(); updateSpy(); });
+function goTo(id){
+  const el = $("#"+id); if (!el) return;
+  scrollTo({top: el.getBoundingClientRect().top + scrollY - $("#bar").offsetHeight + 6, behavior: reduce ? "auto" : "smooth"});
+}
+
+// ---------- jump menu ----------
+function toggleJump(open){
+  const j = $("#jump"); open = open ?? !j.classList.contains("open");
+  j.classList.toggle("open", open); $("#jumpScrim").hidden = !open; $("#fab").setAttribute("aria-expanded", open);
+  if (open){ const cur = j.querySelector('[aria-current="true"]'); if (cur) cur.scrollIntoView({block:"nearest"}); }
+}
+
+// ---------- sheet ----------
+function renderLines(){
+  const keys = Object.keys(cart);
+  if (!keys.length){ closeSheet(); return; }
+  $("#lines").innerHTML = keys.map(k => { const [id,v]=k.split("|"), it=ITEMS[id], p=priceOf(it, v||null);
+    return `<div class="line" data-key="${k}"><div class="nm"><b>${esc(it.n)}</b><small>${v?v+" · ":""}${p==null?"Price at counter":rupee(p)}</small></div>
+      <div class="stepper"><button data-l="dec" aria-label="Remove one">−</button><span class="num">${cart[k]}</span><button data-l="inc" aria-label="Add one">+</button></div>
+      <span class="amt num">${p==null?"—":rupee(p*cart[k])}</span></div>`; }).join("");
+  const {t,ask} = totals(); $("#sheetTotal").textContent = rupee(t);
+  $("#totalLbl").textContent = ask ? `Subtotal + ${ask} item${ask>1?"s":""} priced at counter` : "Subtotal · taxes as applicable";
+  updateWA();
+}
+function updateWA(){
+  const {t,ask} = totals(); const tbl = $("#tableNo").value.trim(), note = $("#orderNote").value.trim();
+  let msg = `Hello ${CONFIG.name}! I'd like to order:\n\n`;
+  for (const k in cart){ const [id,v]=k.split("|"), it=ITEMS[id], p=priceOf(it,v||null); msg += `• ${it.n}${v?" ("+v+")":""} × ${cart[k]}${p==null?"":" = "+rupee(p*cart[k])}\n`; }
+  msg += `\nSubtotal: ${rupee(t)}${ask?" + items priced at counter":""}`; if (tbl) msg += `\nTable: ${tbl}`; if (note) msg += `\nNote: ${note}`;
+  $("#waBtn").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+}
+let lastFocus = null;
+function openSheet(){ toggleJump(false); lastFocus = document.activeElement; renderLines(); $("#sheet").classList.add("open"); $("#scrim").classList.add("open"); $("#sheet").setAttribute("aria-hidden","false"); document.body.style.overflow="hidden"; setTimeout(()=>$("#closeSheet").focus(), 50); }
+function closeSheet(){ $("#sheet").classList.remove("open"); $("#scrim").classList.remove("open"); $("#sheet").setAttribute("aria-hidden","true"); document.body.style.overflow=""; if (lastFocus) lastFocus.focus?.(); }
+
+// ---------- events ----------
+document.addEventListener("click", e => {
+  const chip = e.target.closest(".chip"); if (chip){ goTo(chip.dataset.cat); return; }
+  const jb = e.target.closest("[data-jump]"); if (jb){ toggleJump(false); goTo(jb.dataset.jump); return; }
+  const vb = e.target.closest("[data-var]");
+  if (vb){ const it = ITEMS[vb.closest("[data-id]").dataset.id]; it.sel = vb.dataset.var;
+    vb.parentElement.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b===vb)); refreshControls(it.id); return; }
+  const act = e.target.closest("[data-act]");
+  if (act){ const id = act.closest("[data-ctl]").dataset.ctl; change(id, ITEMS[id].sel, act.dataset.act==="inc"?1:-1);
+    if (e.detail===0){ const again = document.querySelector(`[data-ctl="${id}"] [data-act]`); if (again) again.focus(); } return; }
+  const l = e.target.closest("[data-l]");
+  if (l){ const [id,v] = l.closest(".line").dataset.key.split("|"); change(id, v||null, l.dataset.l==="inc"?1:-1); return; }
+});
+$("#browseBtn").addEventListener("click", e => { e.preventDefault(); scrollTo({top: $("#bar").getBoundingClientRect().top + scrollY, behavior: reduce?"auto":"smooth"}); });
+$("#q").addEventListener("input", () => { applyFilter(); const top = $("#menu").offsetTop - $("#bar").offsetHeight; if (scrollY > top) scrollTo({top, behavior:"auto"}); });
+$("#clearQ").addEventListener("click", () => { $("#q").value=""; applyFilter(); $("#q").focus(); });
+$("#fab").addEventListener("click", () => toggleJump());
+$("#jumpScrim").addEventListener("click", () => toggleJump(false));
+$("#openPlate").addEventListener("click", openSheet);
+$("#closeSheet").addEventListener("click", closeSheet);
+$("#scrim").addEventListener("click", closeSheet);
+$("#clearPlate").addEventListener("click", () => { const ids = new Set(Object.keys(cart).map(k=>k.split("|")[0])); cart = {}; save(); ids.forEach(refreshControls); refreshBar(); closeSheet(); });
+$("#tableNo").addEventListener("input", updateWA); $("#orderNote").addEventListener("input", updateWA);
+addEventListener("keydown", e => { if (e.key!=="Escape") return; if ($("#sheet").classList.contains("open")) closeSheet(); else toggleJump(false); });
+$("#copyPhone").addEventListener("click", async e => {
+  const b = e.currentTarget;
+  try { await navigator.clipboard.writeText(CONFIG.phone); b.textContent = "Copied"; }
+  catch(err){ const r = document.createRange(); r.selectNodeContents($("#fPhone")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selected"; }
+  setTimeout(() => b.textContent = "Copy", 1600);
+});
+
+fillConfig(); render(); applyFilter(); measure(); refreshBar();
+if (document.fonts) document.fonts.ready.then(() => { measure(); updateSpy(); });
+</script>
+
+</body>
+</html>
