@@ -1,0 +1,1000 @@
+{
+  "config": {
+    "name": "YOLO Eats",
+    "nameHi": "योलो",
+    "kind": "Pure Veg Family Restaurant",
+    "cuisine": "Punjabi · Chaap · Momos · Chinese · Pizza",
+    "tagline": "Your cravings, our game. Punjabi tadka, smoky tandoori chaap, momos and pizzas — fresh from our kitchen, all pure veg.",
+    "street": "",
+    "locality": "",
+    "city": "Kathua",
+    "state": "Jammu & Kashmir",
+    "postalCode": "",
+    "country": "IN",
+    "landmark": "near Pathankot",
+    "lat": "",
+    "lng": "",
+    "phone": "+91 98765 43210",
+    "whatsapp": "",
+    "email": "",
+    "mapsUrl": "https://maps.google.com/?q=YOLO+Eats+Kathua",
+    "open": "08:00",
+    "close": "23:00",
+    "siteUrl": "https://yollo.co.in/",
+    "metaTitle": "",
+    "metaDescription": "",
+    "keywords": ""
+  },
+  "menu": [
+    {
+      "id": "thali",
+      "name": "Thali",
+      "hi": "थाली",
+      "sub": "Complete meals on one plate.",
+      "items": [
+        {
+          "n": "Sadi / Plain Thali",
+          "d": "Dal Fry + Mix Veg + Raita + 2 Roti + Half Rice",
+          "p": 120,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Special Thali",
+          "d": "Matar Paneer + Curry + Mix Veg + 2 Roti + Half Rice",
+          "p": 180,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Deluxe Thali",
+          "d": "Shahi Paneer + Dal Makhani + Mix Veg + Raita + 3 Roti + Half Rice",
+          "p": 210,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "YOLO Special Thali",
+          "d": "Kadai Paneer + Dal Makhani + Mix Veg + Any One Dish + Raita + Papad + Jeera Rice + Butter Naan + Cold Drink",
+          "p": 320,
+          "tags": [
+            "sig",
+            "value"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "breakfast",
+      "name": "Breakfast",
+      "hi": "नाश्ता",
+      "sub": "Tandoor-fresh parathas, served with curd and pickle.",
+      "items": [
+        {
+          "n": "Full Breakfast",
+          "d": "2 Paratha + Tea or Curd + Butter, or 4 Roti + Veg + Curd or Tea",
+          "p": 120,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Aloo Paratha",
+          "p": 40
+        },
+        {
+          "n": "Gobhi Paratha",
+          "p": 50
+        },
+        {
+          "n": "Pyaz Paratha",
+          "p": 50
+        },
+        {
+          "n": "Mooli Paratha",
+          "p": 50
+        },
+        {
+          "n": "Mix Paratha",
+          "p": 60
+        },
+        {
+          "n": "Paneer Paratha",
+          "p": 70
+        },
+        {
+          "n": "Aloo Naan Chole",
+          "p": 100
+        },
+        {
+          "n": "Gobhi Naan Chole",
+          "p": 150
+        },
+        {
+          "n": "Mix Naan Chole",
+          "p": 160
+        },
+        {
+          "n": "Paneer Naan Chole",
+          "p": 180
+        },
+        {
+          "n": "Sandwich",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "combo",
+      "name": "Combos",
+      "hi": "कॉम्बो",
+      "items": [
+        {
+          "n": "Tawa Chaap + Lachha Paratha",
+          "p": 150,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Tawa Paneer + Butter Naan",
+          "p": 200,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Chilli Chaap + Tandoori Roti",
+          "p": 160,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Fried Rice + Chilly Paneer",
+          "p": 180,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Kulcha with Gravy",
+          "p": 140,
+          "tags": [
+            "value"
+          ]
+        },
+        {
+          "n": "Biryani with Raita",
+          "p": 170,
+          "tags": [
+            "value"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chaap",
+      "name": "Tandoori Stuffed Chaap",
+      "hi": "चाप",
+      "sub": "Soya chaap from the tandoor. Half and full plates.",
+      "items": [
+        {
+          "n": "Special YOLO Chaap",
+          "d": "Our house special chaap.",
+          "p": null,
+          "tags": [
+            "sig"
+          ]
+        },
+        {
+          "n": "Masala Chaap",
+          "p": null
+        },
+        {
+          "n": "Malai Chaap",
+          "p": null
+        },
+        {
+          "n": "Afghani Chaap",
+          "p": null
+        },
+        {
+          "n": "Chilli Chaap",
+          "p": null
+        },
+        {
+          "n": "Tawa Chaap",
+          "p": null
+        },
+        {
+          "n": "Punjabi Chaap",
+          "p": null
+        },
+        {
+          "n": "Butter Chaap",
+          "p": null
+        },
+        {
+          "n": "Chatpata Chaap",
+          "p": null
+        },
+        {
+          "n": "Gravy Chaap",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "momos",
+      "name": "Momo Special",
+      "hi": "मोमोज़",
+      "items": [
+        {
+          "n": "Tandoori Malai Momo",
+          "d": "Creamy malai momos finished in the tandoor.",
+          "p": null,
+          "tags": [
+            "sig"
+          ]
+        },
+        {
+          "n": "Veg Steam Momo",
+          "p": null
+        },
+        {
+          "n": "Fry Momo",
+          "p": null
+        },
+        {
+          "n": "Steam Paneer Momo",
+          "p": null
+        },
+        {
+          "n": "Veg Tandoori Momo",
+          "p": null
+        },
+        {
+          "n": "Fry Kurkure Momo",
+          "p": null
+        },
+        {
+          "n": "Paneer Kurkure Momo",
+          "p": null
+        },
+        {
+          "n": "Tandoori Paneer Momo",
+          "p": null
+        },
+        {
+          "n": "Veg Malai Momo",
+          "p": null
+        },
+        {
+          "n": "Paneer Malai Momo",
+          "p": null
+        },
+        {
+          "n": "Schezwan Veg Momo",
+          "p": null
+        },
+        {
+          "n": "Paneer Jhol Momo",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "chilly",
+      "name": "Chilly's Special",
+      "hi": "चिली",
+      "sub": "Indo-Chinese, tossed hot in the wok.",
+      "items": [
+        {
+          "n": "Paneer Chilly",
+          "p": null,
+          "tags": [
+            "sig"
+          ]
+        },
+        {
+          "n": "Chilly Paneer Dry",
+          "p": null
+        },
+        {
+          "n": "Chilly Paneer Gravy",
+          "p": null
+        },
+        {
+          "n": "Mushroom Chilly",
+          "p": null
+        },
+        {
+          "n": "Chilly Potato",
+          "p": null
+        },
+        {
+          "n": "Chilly Baby Corn",
+          "p": null
+        },
+        {
+          "n": "Chilly Veg",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "noodles",
+      "name": "Noodles",
+      "hi": "नूडल्स",
+      "items": [
+        {
+          "n": "Veg Noodles",
+          "p": null
+        },
+        {
+          "n": "Hakka Noodles",
+          "p": null
+        },
+        {
+          "n": "Singapuri Noodles",
+          "p": null
+        },
+        {
+          "n": "Chilli Garlic Noodles",
+          "p": null
+        },
+        {
+          "n": "Paneer Noodles",
+          "p": null
+        },
+        {
+          "n": "Mushroom Noodles",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "soups",
+      "name": "Soups",
+      "hi": "सूप",
+      "items": [
+        {
+          "n": "Hot & Sour Soup",
+          "p": null
+        },
+        {
+          "n": "Tomato Soup",
+          "p": null
+        },
+        {
+          "n": "Veg Corn Soup",
+          "p": null
+        },
+        {
+          "n": "Paneer Hot & Sour Soup",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "paneer",
+      "name": "Paneer Dishes",
+      "hi": "पनीर",
+      "sub": "Half / Full",
+      "items": [
+        {
+          "n": "Paneer Tikka Butter Masala",
+          "d": "Tandoori paneer tikka in a rich butter masala gravy.",
+          "p": {
+            "Half": 150,
+            "Full": 300
+          },
+          "tags": [
+            "sig"
+          ]
+        },
+        {
+          "n": "Shahi Paneer",
+          "p": {
+            "Half": 120,
+            "Full": 210
+          }
+        },
+        {
+          "n": "Kadhai Paneer",
+          "p": {
+            "Half": 140,
+            "Full": 220
+          }
+        },
+        {
+          "n": "Matar Paneer",
+          "p": {
+            "Half": 120,
+            "Full": 200
+          }
+        },
+        {
+          "n": "Palak Paneer",
+          "p": {
+            "Half": 130,
+            "Full": 210
+          }
+        },
+        {
+          "n": "Paneer Do Pyaza",
+          "p": {
+            "Half": 140,
+            "Full": 220
+          }
+        },
+        {
+          "n": "Paneer Bhurji",
+          "p": {
+            "Half": 140,
+            "Full": 250
+          }
+        },
+        {
+          "n": "Paneer Butter Masala",
+          "p": {
+            "Half": 140,
+            "Full": 280
+          }
+        },
+        {
+          "n": "Paneer Makhani",
+          "p": 250
+        },
+        {
+          "n": "Chilly Paneer",
+          "p": {
+            "Half": 160,
+            "Full": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "dal",
+      "name": "Tadka Punjab Da",
+      "hi": "दाल",
+      "sub": "Dals and rajma. Half / Full",
+      "items": [
+        {
+          "n": "Dal Makhani",
+          "d": "Black urad, slow-cooked with butter and cream.",
+          "p": {
+            "Half": 75,
+            "Full": 150
+          }
+        },
+        {
+          "n": "Rajma Masala",
+          "p": {
+            "Half": 75,
+            "Full": 150
+          }
+        },
+        {
+          "n": "Dal Fry (Urad / Chana)",
+          "p": {
+            "Half": 65,
+            "Full": 130
+          }
+        },
+        {
+          "n": "Dal Mix",
+          "p": {
+            "Half": 90,
+            "Full": 180
+          }
+        },
+        {
+          "n": "Kadhi Pakoda",
+          "p": {
+            "Half": 70,
+            "Full": 140
+          }
+        }
+      ]
+    },
+    {
+      "id": "veg",
+      "name": "Vegetables",
+      "hi": "सब्ज़ी",
+      "items": [
+        {
+          "n": "Bhindi",
+          "p": {
+            "Half": 70,
+            "Full": 140
+          }
+        },
+        {
+          "n": "Bhindi Masala",
+          "p": {
+            "Half": 80,
+            "Full": 160
+          }
+        },
+        {
+          "n": "Aloo Palak",
+          "p": {
+            "Half": 80,
+            "Full": 160
+          }
+        },
+        {
+          "n": "Aloo Gobhi",
+          "p": 140
+        },
+        {
+          "n": "Aloo Gobhi Masala",
+          "p": 150
+        },
+        {
+          "n": "Saag Sarson",
+          "p": 150
+        },
+        {
+          "n": "Malai Kofta",
+          "p": 220
+        },
+        {
+          "n": "Mix Vegetable",
+          "p": 150
+        },
+        {
+          "n": "Jeera Aloo",
+          "p": 120
+        },
+        {
+          "n": "Aloo Matar",
+          "p": 150
+        },
+        {
+          "n": "Baingan Bharta",
+          "p": 160
+        }
+      ]
+    },
+    {
+      "id": "rice",
+      "name": "Rice",
+      "hi": "चावल",
+      "items": [
+        {
+          "n": "Plain Rice",
+          "p": 80
+        },
+        {
+          "n": "Jeera Rice",
+          "p": 100
+        },
+        {
+          "n": "Paneer Pulao",
+          "p": 190
+        },
+        {
+          "n": "Fried Rice",
+          "d": "Served with curd.",
+          "p": 200
+        },
+        {
+          "n": "Veg Biryani with Raita",
+          "p": 200
+        }
+      ]
+    },
+    {
+      "id": "roti",
+      "name": "Roti & Paratha",
+      "hi": "रोटी",
+      "items": [
+        {
+          "n": "Tawa Roti Plain",
+          "p": 12
+        },
+        {
+          "n": "Tawa Roti Butter",
+          "p": 20
+        },
+        {
+          "n": "Tawa Paratha",
+          "p": 30
+        },
+        {
+          "n": "Tawa Ajwain Paratha",
+          "p": 40
+        },
+        {
+          "n": "Tandoori Plain Roti",
+          "p": 12
+        },
+        {
+          "n": "Tandoori Butter Roti",
+          "p": 15
+        },
+        {
+          "n": "Tandoori Lachha Paratha",
+          "p": 40
+        },
+        {
+          "n": "Tandoori Butter Naan",
+          "d": "3 pieces",
+          "p": 45
+        },
+        {
+          "n": "Tandoori Mirchi Paratha",
+          "p": 50
+        },
+        {
+          "n": "Tandoori Stuffed Naan",
+          "p": 60
+        },
+        {
+          "n": "Tandoori Cheese Paratha",
+          "p": 80
+        }
+      ]
+    },
+    {
+      "id": "raita",
+      "name": "Raita & Salad",
+      "hi": "रायता",
+      "items": [
+        {
+          "n": "Plain Dahi",
+          "p": 40
+        },
+        {
+          "n": "Boondi Raita",
+          "p": 60
+        },
+        {
+          "n": "Kheera (Cucumber) Raita",
+          "p": 70
+        },
+        {
+          "n": "Onion Raita",
+          "p": 80
+        },
+        {
+          "n": "Beetroot Raita",
+          "p": 80
+        },
+        {
+          "n": "Green Salad",
+          "p": 50
+        },
+        {
+          "n": "Plain Papad",
+          "p": 10
+        },
+        {
+          "n": "Fry Papad",
+          "p": 20
+        },
+        {
+          "n": "Masala Papad",
+          "p": 25
+        }
+      ]
+    },
+    {
+      "id": "pizza",
+      "name": "YOLO Special Pizza",
+      "hi": "पिज़्ज़ा",
+      "items": [
+        {
+          "n": "YOLO Special Pizza",
+          "d": "8 slices, loaded with our house toppings.",
+          "p": null,
+          "tags": [
+            "sig"
+          ]
+        },
+        {
+          "n": "Veg Loaded Pizza",
+          "p": null
+        },
+        {
+          "n": "Cheese Corn Pizza",
+          "p": null
+        },
+        {
+          "n": "Paneer Pizza",
+          "p": null
+        },
+        {
+          "n": "Double Paneer Pizza",
+          "p": null
+        },
+        {
+          "n": "Mushroom Pizza",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "burger",
+      "name": "Burgers",
+      "hi": "बर्गर",
+      "items": [
+        {
+          "n": "Aloo Tikki Burger",
+          "p": null
+        },
+        {
+          "n": "Veg Burger",
+          "p": null
+        },
+        {
+          "n": "Cheese Burger",
+          "p": null
+        },
+        {
+          "n": "Noodles Burger",
+          "p": null
+        },
+        {
+          "n": "Double Tikki Burger",
+          "p": null
+        },
+        {
+          "n": "Mushroom Burger",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "pasta",
+      "name": "Pasta",
+      "hi": "पास्ता",
+      "items": [
+        {
+          "n": "Red Sauce Pasta",
+          "p": 110
+        },
+        {
+          "n": "White Sauce Pasta",
+          "p": 120
+        },
+        {
+          "n": "Mix Sauce Pasta",
+          "p": 130
+        },
+        {
+          "n": "Mushroom Pasta",
+          "p": 140
+        },
+        {
+          "n": "Paneer Pasta",
+          "p": 150
+        },
+        {
+          "n": "Cheesy Pasta",
+          "p": 150
+        }
+      ]
+    },
+    {
+      "id": "chaat",
+      "name": "Tikki Chaat",
+      "hi": "चाट",
+      "items": [
+        {
+          "n": "Tikki with Chhole",
+          "d": "2 pieces",
+          "p": null
+        },
+        {
+          "n": "Samosa with Chhole",
+          "p": null
+        },
+        {
+          "n": "Kulcha Chhole",
+          "p": null
+        }
+      ]
+    },
+    {
+      "id": "drinks",
+      "name": "Beverages",
+      "hi": "पेय",
+      "items": [
+        {
+          "n": "Tea",
+          "p": 20
+        },
+        {
+          "n": "Black Tea",
+          "p": 15
+        },
+        {
+          "n": "Hot Coffee",
+          "p": 30
+        },
+        {
+          "n": "Black Coffee",
+          "p": 25
+        },
+        {
+          "n": "Cold Coffee",
+          "p": 50
+        },
+        {
+          "n": "Sweet Lassi",
+          "p": null
+        },
+        {
+          "n": "Salty Lassi",
+          "p": null
+        },
+        {
+          "n": "Water Bottle",
+          "d": "At MRP",
+          "p": null
+        }
+      ]
+    }
+  ],
+  "photos": {
+    "Sadi / Plain Thali": 35008222,
+    "Special Thali": 29148133,
+    "Deluxe Thali": 32797056,
+    "YOLO Special Thali": 35539324,
+    "Full Breakfast": 28885201,
+    "Aloo Paratha": 20408462,
+    "Gobhi Paratha": 33428723,
+    "Pyaz Paratha": 35066810,
+    "Mooli Paratha": 35079296,
+    "Mix Paratha": 35066811,
+    "Paneer Paratha": 12737919,
+    "Aloo Naan Chole": 7364662,
+    "Gobhi Naan Chole": 29066704,
+    "Mix Naan Chole": 9287032,
+    "Paneer Naan Chole": 31306976,
+    "Sandwich": 9240536,
+    "Tawa Chaap + Lachha Paratha": 20446402,
+    "Tawa Paneer + Butter Naan": 5127316,
+    "Chilli Chaap + Tandoori Roti": 12737800,
+    "Fried Rice + Chilly Paneer": 31783383,
+    "Kulcha with Gravy": 20446413,
+    "Biryani with Raita": 9609848,
+    "Special YOLO Chaap": 3928854,
+    "Masala Chaap": 20395267,
+    "Malai Chaap": 8414639,
+    "Afghani Chaap": 28674559,
+    "Chilli Chaap": 29631461,
+    "Tawa Chaap": 30858402,
+    "Punjabi Chaap": 30858420,
+    "Butter Chaap": 28674541,
+    "Chatpata Chaap": 20395267,
+    "Gravy Chaap": 28674541,
+    "Tandoori Malai Momo": 18803174,
+    "Veg Steam Momo": 33670191,
+    "Fry Momo": 5409009,
+    "Steam Paneer Momo": 18803177,
+    "Veg Tandoori Momo": 39231335,
+    "Fry Kurkure Momo": 28445591,
+    "Paneer Kurkure Momo": 28445591,
+    "Tandoori Paneer Momo": 37374102,
+    "Veg Malai Momo": 36173262,
+    "Paneer Malai Momo": 13072972,
+    "Schezwan Veg Momo": 3911228,
+    "Paneer Jhol Momo": 3926123,
+    "Paneer Chilly": 29631468,
+    "Chilly Paneer Dry": 29631461,
+    "Chilly Paneer Gravy": 28674530,
+    "Mushroom Chilly": 8250339,
+    "Chilly Potato": 11485199,
+    "Chilly Baby Corn": 5695587,
+    "Chilly Veg": 29631489,
+    "Veg Noodles": 3926135,
+    "Hakka Noodles": 2764905,
+    "Singapuri Noodles": 17184357,
+    "Chilli Garlic Noodles": 38579055,
+    "Paneer Noodles": 27135617,
+    "Mushroom Noodles": 36771456,
+    "Hot & Sour Soup": 27039861,
+    "Tomato Soup": 12338625,
+    "Veg Corn Soup": 13788766,
+    "Paneer Hot & Sour Soup": 27039861,
+    "Paneer Tikka Butter Masala": 30858420,
+    "Shahi Paneer": 9609838,
+    "Kadhai Paneer": 12737816,
+    "Matar Paneer": 9609842,
+    "Palak Paneer": 8625948,
+    "Paneer Do Pyaza": 12737805,
+    "Paneer Bhurji": 35993886,
+    "Paneer Butter Masala": 11188417,
+    "Paneer Makhani": 11115801,
+    "Chilly Paneer": 29631468,
+    "Dal Makhani": 28674555,
+    "Rajma Masala": 12737912,
+    "Dal Fry (Urad / Chana)": 30203314,
+    "Dal Mix": 33379362,
+    "Kadhi Pakoda": 17200447,
+    "Bhindi": 6309779,
+    "Bhindi Masala": 14242049,
+    "Aloo Palak": 13513758,
+    "Aloo Gobhi": 11663143,
+    "Aloo Gobhi Masala": 2116093,
+    "Saag Sarson": 5031947,
+    "Malai Kofta": 36343375,
+    "Mix Vegetable": 19969210,
+    "Jeera Aloo": 1051399,
+    "Aloo Matar": 29684979,
+    "Baingan Bharta": 15108368,
+    "Plain Rice": 8956718,
+    "Jeera Rice": 28674713,
+    "Paneer Pulao": 35552983,
+    "Fried Rice": 32489477,
+    "Veg Biryani with Raita": 7593267,
+    "Tawa Roti Plain": 5589943,
+    "Tawa Roti Butter": 5434693,
+    "Tawa Paratha": 37555450,
+    "Tawa Ajwain Paratha": 38834853,
+    "Tandoori Plain Roti": 36840077,
+    "Tandoori Butter Roti": 12737800,
+    "Tandoori Lachha Paratha": 20446390,
+    "Tandoori Butter Naan": 38163958,
+    "Tandoori Mirchi Paratha": 38834855,
+    "Tandoori Stuffed Naan": 16851842,
+    "Tandoori Cheese Paratha": 12737919,
+    "Plain Dahi": 34377266,
+    "Boondi Raita": 29699511,
+    "Kheera (Cucumber) Raita": 35552954,
+    "Onion Raita": 35552952,
+    "Beetroot Raita": 32235866,
+    "Green Salad": 8992837,
+    "Plain Papad": 34507153,
+    "Fry Papad": 34739831,
+    "Masala Papad": 34347890,
+    "YOLO Special Pizza": 8609973,
+    "Veg Loaded Pizza": 37919566,
+    "Cheese Corn Pizza": 31450854,
+    "Paneer Pizza": 11974635,
+    "Double Paneer Pizza": 11974636,
+    "Mushroom Pizza": 29699537,
+    "Aloo Tikki Burger": 20722055,
+    "Veg Burger": 28396820,
+    "Cheese Burger": 28636771,
+    "Noodles Burger": 5639459,
+    "Double Tikki Burger": 5555667,
+    "Mushroom Burger": 7786565,
+    "Red Sauce Pasta": 5419339,
+    "White Sauce Pasta": 31109622,
+    "Mix Sauce Pasta": 29173117,
+    "Mushroom Pasta": 1487511,
+    "Paneer Pasta": 34728280,
+    "Cheesy Pasta": 34363091,
+    "Tikki with Chhole": 27359372,
+    "Samosa with Chhole": 9027521,
+    "Kulcha Chhole": 9287035,
+    "Tea": 37186989,
+    "Black Tea": 15435922,
+    "Hot Coffee": 459489,
+    "Black Coffee": 28836959,
+    "Cold Coffee": 35229818,
+    "Sweet Lassi": 8917283,
+    "Salty Lassi": 8489749,
+    "Water Bottle": 31699476
+  },
+  "mustTry": [
+    "yolo-special-thali",
+    "special-yolo-chaap",
+    "tandoori-malai-momo",
+    "paneer-tikka-butter-masala",
+    "yolo-special-pizza",
+    "deluxe-thali",
+    "chilli-garlic-noodles",
+    "dal-makhani"
+  ]
+}

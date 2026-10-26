@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /data/
+
+# Image crawlers may index the food photography
+User-agent: Googlebot-Image
+Allow: /assets/
+
+Sitemap: https://yollo.co.in/sitemap.xml

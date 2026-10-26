@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://yollo.co.in/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://yollo.co.in/assets/og-image.jpg</image:loc>
+      <image:title>YOLO Eats — pure veg family restaurant in Kathua, Jammu &amp; Kashmir</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://yollo.co.in/assets/yolo-hero-2000.jpg</image:loc>
+      <image:title>YOLO Eats — fries, cold drinks and veg burgers</image:title>
+    </image:image>
+  </url>
+</urlset>

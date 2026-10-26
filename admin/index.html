@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YOLO Eats · Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --brand:#FDFB06; --brand-dim:#C9C705; --brand-ink:#0B0B0B;
+  --bg:#0B0B0B; --panel:#141413; --panel-2:#1C1C1A; --raise:#24241F;
+  --line:#2C2C27; --line-2:#3A3A33;
+  --text:#F4F1E9; --text-2:#A9A69D; --text-3:#726F67;
+  --ok:#4ADE80; --warn:#FBBF24; --bad:#F87171; --info:#60A5FA;
+  --r:12px; --r-lg:18px;
+  --ease:cubic-bezier(.2,.75,.2,1);
+  --font:"Bricolage Grotesque","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#2E2E28;border-radius:99px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#3C3C34}
+
+/* ---------------------------------------------------------- primitives */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:10px;
+  border:1px solid var(--line-2);background:var(--raise);color:var(--text);font-size:14px;font-weight:600;white-space:nowrap;
+  transition:background .18s var(--ease),border-color .18s,transform .12s,opacity .18s}
+.btn:hover{background:#2E2E28;border-color:#4A4A41}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.5;filter:grayscale(.75);pointer-events:none}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:700}
+.btn-primary:hover{background:#FFFE4D;border-color:#FFFE4D}
+.btn-ghost{background:transparent;border-color:var(--line)}
+.btn-ghost:hover{background:var(--panel-2)}
+.btn-danger{color:var(--bad);border-color:#4A2B2B}
+.btn-danger:hover{background:#2A1818;border-color:#6B3A3A}
+.btn-sm{height:32px;padding:0 11px;font-size:13px;border-radius:9px}
+.btn-icon{width:32px;height:32px;padding:0;border-radius:9px}
+.btn-icon svg{width:15px;height:15px}
+
+.field{display:grid;gap:6px}
+.field label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+.field .hint{font-size:12px;color:var(--text-3);line-height:1.45}
+input[type=text],input[type=email],input[type=password],input[type=number],input[type=time],input[type=url],select,textarea{
+  width:100%;height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel-2);
+  color:var(--text);transition:border-color .18s,background .18s}
+textarea{height:auto;padding:10px 12px;resize:vertical;min-height:72px;line-height:1.5}
+input:hover,select:hover,textarea:hover{border-color:#4A4A41}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);background:#1F1F1B}
+input::placeholder,textarea::placeholder{color:#5E5B54}
+select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23A9A69D' stroke-width='2' stroke-linecap='round'><path d='m4 6 4 4 4-4'/></svg>");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:99px;font-size:12px;font-weight:600;
+  background:var(--raise);color:var(--text-2);border:1px solid var(--line)}
+.chip.y{background:rgba(253,251,6,.12);color:var(--brand);border-color:rgba(253,251,6,.3)}
+.chip.g{background:rgba(74,222,128,.12);color:var(--ok);border-color:rgba(74,222,128,.28)}
+.chip.r{background:rgba(248,113,113,.12);color:var(--bad);border-color:rgba(248,113,113,.28)}
+
+/* ------------------------------------------------------------- shell */
+.shell{display:grid;grid-template-columns:248px 1fr;height:100vh;height:100dvh}
+.side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.side-top{padding:20px 18px 16px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line)}
+.side-top img{width:38px;height:38px;flex:none}
+.side-top b{display:block;font-size:16px;letter-spacing:.01em;line-height:1.2}
+.side-top span{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+.side-nav{padding:12px 10px;display:grid;gap:2px;align-content:start;overflow-y:auto;flex:1;min-height:0}
+.side-nav button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:500;
+  color:var(--text-2);text-align:left;transition:background .16s,color .16s}
+.side-nav button svg{width:17px;height:17px;flex:none;opacity:.8}
+.side-nav button:hover{background:var(--panel-2);color:var(--text)}
+.side-nav button[aria-current=true]{background:var(--raise);color:var(--text)}
+.side-nav button[aria-current=true] svg{color:var(--brand);opacity:1}
+.side-nav .tally{margin-left:auto;font-size:12px;color:var(--text-3)}
+.side-foot{padding:12px;border-top:1px solid var(--line);display:grid;gap:8px}
+.who{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;background:var(--panel-2);font-size:12px;min-width:0}
+.who i{width:7px;height:7px;border-radius:99px;background:var(--ok);flex:none;box-shadow:0 0 0 3px rgba(74,222,128,.15)}
+.who i.off{background:var(--warn);box-shadow:0 0 0 3px rgba(251,191,36,.15)}
+.who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-2)}
+
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.bar{height:62px;flex:none;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;background:rgba(11,11,11,.85);backdrop-filter:blur(10px)}
+.bar h1{font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+.bar .sub{font-size:13px;color:var(--text-3)}
+.bar .grow{flex:1}
+.view{flex:1;overflow-y:auto;min-height:0}
+.pad{padding:24px 22px 90px;max-width:1240px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.card h2{margin:0 0 4px;font-size:16px;font-weight:600}
+.card .desc{margin:0 0 18px;font-size:13px;color:var(--text-3);max-width:62ch}
+.grid{display:grid;gap:16px}
+@media (min-width:720px){.cols-2{grid-template-columns:1fr 1fr}.cols-3{grid-template-columns:repeat(3,1fr)}}
+
+/* -------------------------------------------------------- dashboard */
+.stats{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.stat b{display:block;font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-top:6px}
+.stat.accent b{color:var(--brand)}
+.stat.warn b{color:var(--warn)}
+
+.banner{display:flex;align-items:flex-start;gap:13px;padding:15px 17px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
+.banner svg{width:19px;height:19px;flex:none;margin-top:1px}
+.banner b{display:block;font-size:14px;margin-bottom:2px}
+.banner p{margin:0;font-size:13px;color:var(--text-2);line-height:1.5}
+.banner.y{border-color:rgba(253,251,6,.28);background:rgba(253,251,6,.06)}
+.banner.y svg{color:var(--brand)}
+.banner.b{border-color:rgba(96,165,250,.28);background:rgba(96,165,250,.06)}
+.banner.b svg{color:var(--info)}
+.banner .act{margin-left:auto;flex:none}
+
+/* ------------------------------------------------------------- menu */
+.editor{display:grid;grid-template-columns:292px 1fr;gap:18px;align-items:start}
+@media (max-width:980px){.editor{grid-template-columns:1fr}}
+
+.catlist{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;position:sticky;top:0}
+.catlist header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.catlist header b{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.catlist ul{list-style:none;margin:0;padding:6px;display:grid;gap:2px;max-height:min(58vh,560px);overflow-y:auto}
+.catlist li{display:flex;align-items:center;gap:6px;padding-right:6px;border-radius:10px;overflow:hidden;transition:background .16s}
+.catlist li:hover{background:var(--panel-2)}
+.catlist li[aria-current=true]{background:var(--raise)}
+.catlist li[aria-current=true] .pick b{color:var(--brand)}
+.catlist li.drag-over{box-shadow:inset 0 2px 0 var(--brand)}
+.catlist .grip{padding:0 2px 0 8px;color:var(--text-3);cursor:grab;touch-action:none}
+.catlist .grip:active{cursor:grabbing}
+.catlist .grip svg{width:13px;height:13px;display:block}
+.catlist .pick{flex:1 1 auto;min-width:0;padding:9px 6px 9px 0;text-align:left}
+.catlist .btn-icon{flex:none;width:30px;height:30px;border-color:transparent;background:transparent}
+.catlist li:hover .btn-icon{border-color:var(--line-2);background:var(--raise)}
+.catlist .pick b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.catlist .pick span{display:block;font-size:12px;color:var(--text-3)}
+.catlist footer{padding:10px;border-top:1px solid var(--line)}
+
+.items{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.items > header{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.items > header h2{margin:0;font-size:17px;font-weight:600}
+.items > header .cnt{font-size:13px;color:var(--text-3)}
+.items > header .grow{flex:1}
+.rows{display:grid}
+.row{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:start;padding:13px 18px;border-bottom:1px solid var(--line);transition:background .16s}
+.row:last-child{border-bottom:0}
+.row:hover{background:#17171500}
+.row.open{background:var(--panel-2)}
+.row.drag-over{box-shadow:inset 0 2px 0 var(--brand)}
+.row .grip{color:var(--text-3);cursor:grab;padding-top:9px;touch-action:none}
+.row .grip:active{cursor:grabbing}
+.row .grip svg{width:13px;height:13px;display:block}
+.row .head{min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:4px;text-align:left;width:100%}
+.row .head .nm{font-size:15px;font-weight:600}
+.row .head .pr{font-size:14px;color:var(--brand);font-variant-numeric:tabular-nums}
+.row .head .pr.ask{color:var(--text-3);font-style:italic}
+.row .head .dd{flex-basis:100%;font-size:13px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .tools{display:flex;gap:6px;align-items:center;padding-top:2px}
+.row .star{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--text-3);transition:color .16s,background .16s}
+.row .star:hover{background:var(--raise)}
+.row .star[aria-pressed=true]{color:var(--brand)}
+.row .star svg{width:16px;height:16px}
+.row .body{grid-column:1/-1;display:grid;gap:14px;padding:6px 0 10px}
+@media (min-width:860px){.row .body{grid-template-columns:1.4fr 1fr}}
+.row .body .full{grid-column:1/-1}
+.pricebox{display:grid;gap:8px;grid-template-columns:140px 1fr;align-items:end}
+.pricebox.two{grid-template-columns:140px 1fr 1fr}
+.tagrow{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.check{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--text);cursor:pointer;user-select:none}
+.check input{width:17px;height:17px;accent-color:var(--brand);cursor:pointer}
+.thumbrow{display:flex;gap:10px;align-items:flex-end}
+.thumbrow .field{flex:1;min-width:0}
+.thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--raise);border:1px solid var(--line-2);flex:none}
+.empty{padding:40px 20px;text-align:center;color:var(--text-3);font-size:14px}
+
+/* ------------------------------------------------------------ signature */
+.picks{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.pickcard{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:var(--r);border:1px solid var(--line);background:var(--panel-2);text-align:left;transition:border-color .16s,background .16s}
+.pickcard:hover{border-color:var(--line-2);background:var(--raise)}
+.pickcard[aria-pressed=true]{border-color:var(--brand);background:rgba(253,251,6,.07)}
+.pickcard img{width:38px;height:38px;border-radius:9px;object-fit:cover;background:var(--raise);flex:none}
+.pickcard .t{min-width:0;flex:1}
+.pickcard .t b{display:block;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickcard .t span{display:block;font-size:11.5px;color:var(--text-3)}
+.pickcard .mk{width:18px;height:18px;border-radius:99px;border:1.5px solid var(--line-2);flex:none;display:grid;place-items:center}
+.pickcard[aria-pressed=true] .mk{background:var(--brand);border-color:var(--brand);color:#0B0B0B}
+.pickcard .mk svg{width:11px;height:11px;opacity:0}
+.pickcard[aria-pressed=true] .mk svg{opacity:1}
+
+/* --------------------------------------------------------------- login */
+.gate{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:24px;
+  background:radial-gradient(1100px 560px at 50% -12%,rgba(253,251,6,.1),transparent 62%),var(--bg)}
+.gate-card{width:100%;max-width:410px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:30px 28px 26px;
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.9)}
+.gate-card .brandline{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.gate-card .brandline img{width:48px;height:48px}
+.gate-card .brandline b{display:block;font-size:19px}
+.gate-card .brandline span{display:block;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3)}
+.gate-card form{display:grid;gap:14px}
+.gate-card .btn{height:44px;width:100%}
+.msg{font-size:13px;padding:11px 13px;border-radius:10px;line-height:1.45}
+.msg.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#FCA5A5}
+.msg.inf{background:rgba(96,165,250,.09);border:1px solid rgba(96,165,250,.26);color:#BFDBFE}
+.gate-alt{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);text-align:center;font-size:13px;color:var(--text-3)}
+.gate-alt button{color:var(--brand);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* --------------------------------------------------------------- misc */
+.savebar{position:fixed;left:50%;bottom:22px;translate:-50% 0;z-index:40;display:flex;align-items:center;gap:14px;
+  padding:10px 10px 10px 18px;border-radius:99px;background:rgba(28,28,26,.96);border:1px solid var(--line-2);
+  box-shadow:0 22px 50px -20px rgba(0,0,0,.9);backdrop-filter:blur(12px);
+  opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .3s var(--ease),transform .3s var(--ease),visibility .3s}
+.savebar.show{opacity:1;visibility:visible;transform:none}
+.savebar span{font-size:13.5px;color:var(--text-2)}
+.savebar b{color:var(--brand)}
+@media (max-width:620px){.savebar{left:12px;right:12px;translate:none;justify-content:space-between}}
+
+.toast{position:fixed;right:20px;bottom:20px;z-index:60;display:grid;gap:10px;max-width:min(380px,calc(100vw - 40px))}
+.toast div{display:flex;align-items:flex-start;gap:10px;padding:13px 15px;border-radius:var(--r);background:var(--raise);
+  border:1px solid var(--line-2);font-size:13.5px;box-shadow:0 18px 40px -18px rgba(0,0,0,.9);animation:pop .3s var(--ease)}
+.toast div.ok{border-color:rgba(74,222,128,.4)}
+.toast div.bad{border-color:rgba(248,113,113,.45)}
+.toast svg{width:16px;height:16px;flex:none;margin-top:1px}
+.toast div.ok svg{color:var(--ok)} .toast div.bad svg{color:var(--bad)}
+@keyframes pop{from{opacity:0;transform:translateY(12px)}}
+
+.search{position:relative;min-width:200px}
+.search input{height:38px;padding-left:34px}
+.search svg{position:absolute;left:11px;top:50%;translate:0 -50%;width:15px;height:15px;color:var(--text-3);pointer-events:none}
+
+.kv{display:grid;gap:10px}
+.kv div{display:flex;justify-content:space-between;gap:16px;font-size:13.5px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.kv div:last-child{border-bottom:0;padding-bottom:0}
+.kv dt,.kv .k{color:var(--text-3)}
+.kv .v{text-align:right;color:var(--text);font-weight:500;word-break:break-word}
+
+/* ---------------------------------------------------------------- modal */
+.modal-root{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px}
+.modal-root::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);animation:fade .2s}
+.modal{position:relative;width:100%;max-width:480px;background:var(--panel);border:1px solid var(--line-2);border-radius:18px;
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.95);animation:rise .26s var(--ease);max-height:88vh;display:flex;flex-direction:column}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.985)}}
+.modal header{padding:20px 22px 0}
+.modal h3{margin:0 0 4px;font-size:17px;font-weight:600}
+.modal .sub{margin:0;font-size:13.5px;color:var(--text-3);line-height:1.5}
+.modal .body{padding:18px 22px;display:grid;gap:15px;overflow-y:auto}
+.modal footer{padding:14px 22px 18px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--line);margin-top:auto}
+.modal footer .btn{min-width:96px}
+.err{font-size:12.5px;color:#FCA5A5;display:flex;align-items:center;gap:6px}
+.err svg{width:13px;height:13px;flex:none}
+input.bad,textarea.bad,select.bad{border-color:#B45454}
+
+/* ------------------------------------------------------------------- SEO */
+.serp{background:#fff;border-radius:12px;padding:16px 18px;font-family:arial,sans-serif}
+.serp .u{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.serp .fav{width:26px;height:26px;border-radius:99px;background:#0B0B0B;display:grid;place-items:center;flex:none}
+.serp .fav img{width:17px;height:17px}
+.serp .site{font-size:14px;color:#202124;line-height:1.2}
+.serp .site small{display:block;font-size:12px;color:#4d5156}
+.serp .t{font-size:20px;line-height:1.3;color:#1a0dab;margin:4px 0 3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.serp .d{font-size:14px;line-height:1.58;color:#4d5156;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.counter{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--text-3)}
+.counter b{font-variant-numeric:tabular-nums;font-weight:600}
+.counter.good b{color:var(--ok)} .counter.warn b{color:var(--warn)} .counter.bad b{color:var(--bad)}
+.health{display:grid;gap:0}
+.health > div{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.health > div:last-child{border-bottom:0}
+.health > div > div{min-width:0}
+.health svg{width:16px;height:16px;flex:none;margin-top:1px}
+.health .pass svg{color:var(--ok)} .health .warn svg{color:var(--warn)} .health .fail svg{color:var(--bad)}
+.health b{font-weight:600;display:block;line-height:1.4}
+.health span{display:block;margin-top:2px;color:var(--text-3);font-size:12.5px;line-height:1.45}
+
+.burger{display:none}
+.scrim{display:none}
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;inset:0 auto 0 0;width:270px;z-index:50;transform:translateX(-100%);transition:transform .3s var(--ease)}
+  .side.open{transform:none}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:45;opacity:0;visibility:hidden;transition:.3s}
+  .scrim.show{opacity:1;visibility:visible}
+  .burger{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2)}
+  .burger svg{width:17px;height:17px}
+  .pad{padding:18px 14px 90px}
+  .bar{padding:0 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================================================== LOGIN GATE -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="brandline">
+      <img src="../assets/logo.png" alt="" width="1024" height="1024">
+      <div><b>YOLO Eats</b><span>Admin panel</span></div>
+    </div>
+
+    <div class="msg inf" id="gateMode" hidden></div>
+    <div class="msg err" id="gateErr" hidden></div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="username" required placeholder="owner@restaurant.com">
+      </div>
+      <div class="field">
+        <label for="pw">Password</label>
+        <input type="password" id="pw" autocomplete="current-password" required placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" type="submit" id="loginBtn">Sign in</button>
+    </form>
+
+    <div class="gate-alt">
+      <button type="button" id="offlineBtn">Continue without signing in</button>
+      <div style="margin-top:6px;font-size:12px">Edits stay on this device until you publish.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= SHELL -->
+<div class="shell" id="app" hidden>
+  <div class="scrim" id="scrim"></div>
+
+  <aside class="side" id="side">
+    <div class="side-top">
+      <img src="../assets/logo.png" alt="" width="1024" height="1024">
+      <div><b>YOLO Eats</b><span>Admin</span></div>
+    </div>
+
+    <nav class="side-nav" id="nav">
+      <button data-view="dash" aria-current="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard</button>
+      <button data-view="menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+        Menu <span class="tally" id="tallyItems"></span></button>
+      <button data-view="sig">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.6 5.5 6 .9-4.3 4.3 1 6.1L12 17l-5.3 2.8 1-6.1L3.4 9.4l6-.9z"/></svg>
+        Signature plates <span class="tally" id="tallySig"></span></button>
+      <button data-view="seo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+        Google &amp; SEO</button>
+      <button data-view="set">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4 5.3 5.3"/></svg>
+        Restaurant details</button>
+      <button data-view="pub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/><path d="M4 21h16"/></svg>
+        Publish</button>
+    </nav>
+
+    <div class="side-foot">
+      <div class="who"><i id="whoDot"></i><span id="whoText">Local mode</span></div>
+      <a class="btn btn-ghost btn-sm" href="../index.html" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>
+        View website</a>
+      <button class="btn btn-ghost btn-sm" id="signOut">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="bar">
+      <button class="burger" id="burger" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div><h1 id="viewTitle">Dashboard</h1></div>
+      <div class="grow"></div>
+      <span class="sub" id="savedAt"></span>
+    </header>
+
+    <div class="view" id="view"><div class="pad" id="pad"></div></div>
+  </main>
+</div>
+
+<div class="savebar" id="saveBar">
+  <span><b id="dirtyCount">0</b> unpublished change<span id="dirtyPlural">s</span></span>
+  <button class="btn btn-ghost btn-sm" id="discardBtn">Discard</button>
+  <button class="btn btn-primary btn-sm" id="publishQuick">Publish now</button>
+</div>
+
+<div id="modalHost"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/yolo-config.js"></script>
+<script src="../assets/js/yolo-data.js"></script>
+<script>
+"use strict";
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const slug = s => YoloData.slug(s);
+const rupee = n => "₹" + Number(n).toLocaleString("en-IN");
+const DRAFT = "yolo-admin-draft";
+
+const ICON = {
+  grip:  '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"/><circle cx="15" cy="5" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="19" r="1.7"/><circle cx="15" cy="19" r="1.7"/></svg>',
+  star:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 2.6 5.5 6 .9-4.3 4.3 1 6.1L12 17l-5.3 2.8 1-6.1L3.4 9.4l6-.9z"/></svg>',
+  starF: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.6 5.5 6 .9-4.3 4.3 1 6.1L12 17l-5.3 2.8 1-6.1L3.4 9.4l6-.9z"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg>',
+  plus:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>',
+  edit:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  warn:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+  info:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  ok:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>',
+  down:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="m6 11 6 6 6-6"/><path d="M4 21h16"/></svg>'
+};
+
+/* ===================================================== state ========== */
+let S = null;            // { config, menu, photos, mustTry }
+let baseline = "";       // JSON snapshot of the last published state
+let activeCat = 0;
+let openItem = null;     // "catIndex:itemIndex"
+let itemQuery = "";
+let signedIn = false;
+let currentView = "dash";
+
+const BLANK = {
+  config: {
+    name:"YOLO Eats", nameHi:"योलो", kind:"Pure Veg Family Restaurant",
+    cuisine:"Punjabi · Chaap · Momos · Chinese · Pizza", tagline:"",
+    street:"", locality:"", city:"", state:"", postalCode:"", country:"IN",
+    landmark:"", lat:"", lng:"",
+    phone:"", whatsapp:"", email:"", mapsUrl:"",
+    open:"08:00", close:"23:00",
+    siteUrl:"", metaTitle:"", metaDescription:"", keywords:""
+  },
+  menu: [], photos: {}, mustTry: []
+};
+
+const dirty = () => JSON.stringify(S) !== baseline;
+
+function markChanged(){
+  const d = dirty();
+  $("#saveBar").classList.toggle("show", d);
+  if (d){
+    let n = 0;
+    try {
+      const b = JSON.parse(baseline);
+      n = Math.abs(countItems(S) - countItems(b)) + (JSON.stringify(S.config) !== JSON.stringify(b.config) ? 1 : 0);
+      if (!n) n = 1;
+    } catch(e){ n = 1; }
+    $("#dirtyCount").textContent = n;
+    $("#dirtyPlural").hidden = n === 1;
+  }
+  try { localStorage.setItem(DRAFT, JSON.stringify(S)); } catch(e){}
+  $("#tallyItems").textContent = countItems(S);
+  $("#tallySig").textContent = (S.mustTry || []).length;
+}
+
+const countItems = o => (o.menu || []).reduce((n,c) => n + (c.items||[]).length, 0);
+const addressLine = () => [S.config.street, S.config.locality, S.config.city, S.config.state, S.config.postalCode]
+  .map(trim).filter(Boolean).join(", ");
+
+/* ===================================================== dialogs ======== */
+const trim = v => String(v == null ? "" : v).trim();
+const CHECK = {
+  phone: v => !v || /^[+0-9][0-9 ()\-]{6,}$/.test(v) || "Use a number like +91 98765 43210",
+  whatsapp: v => !v || /^[0-9]{10,15}$/.test(v) || "Digits only with country code — e.g. 919876543210",
+  email: v => !v || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) || "That does not look like an email address",
+  siteUrl: v => !v || /^https?:\/\/[^\s]+$/.test(v) || "Start with https:// — e.g. https://yollo.co.in/",
+  mapsUrl: v => !v || /^https?:\/\/[^\s]+$/.test(v) || "Paste the full link that starts with https://",
+  lat: v => !v || (!isNaN(+v) && Math.abs(+v) <= 90) || "Latitude is a number between -90 and 90",
+  lng: v => !v || (!isNaN(+v) && Math.abs(+v) <= 180) || "Longitude is a number between -180 and 180",
+  postalCode: v => !v || /^[0-9]{6}$/.test(v) || "An Indian PIN code is 6 digits",
+  open: v => !v || /^\d{2}:\d{2}$/.test(v) || "Use 24-hour time, e.g. 08:00",
+  close: v => !v || /^\d{2}:\d{2}$/.test(v) || "Use 24-hour time, e.g. 23:00"
+};
+function checkField(k, v){
+  const fn = CHECK[k]; if (!fn) return true;
+  const r = fn(trim(v));
+  return r === true ? true : r;
+}
+
+let modalClose = null;
+/* dialog({title, desc, fields:[{k,label,type,value,placeholder,hint,required}],
+           confirmText, danger}) -> Promise<values|null>  (no fields = a confirm) */
+function dialog(opts){
+  return new Promise(resolve => {
+    const host = $("#modalHost");
+    const fields = opts.fields || [];
+    host.innerHTML = `<div class="modal-root" role="dialog" aria-modal="true" aria-labelledby="mdT">
+      <div class="modal">
+        <header><h3 id="mdT">${esc(opts.title)}</h3>${opts.desc ? `<p class="sub">${opts.desc}</p>` : ""}</header>
+        ${fields.length ? `<div class="body">${fields.map(f => `
+          <div class="field">
+            <label for="md-${f.k}">${esc(f.label)}</label>
+            ${f.type === "textarea"
+              ? `<textarea id="md-${f.k}" data-mk="${f.k}" placeholder="${esc(f.placeholder||"")}">${esc(f.value||"")}</textarea>`
+              : `<input type="${f.type||"text"}" id="md-${f.k}" data-mk="${f.k}" value="${esc(f.value||"")}" placeholder="${esc(f.placeholder||"")}">`}
+            ${f.hint ? `<span class="hint">${f.hint}</span>` : ""}
+            <span class="err" data-me="${f.k}" hidden></span>
+          </div>`).join("")}</div>` : '<div class="body"></div>'}
+        <footer>
+          <button class="btn btn-ghost" data-md="cancel">Cancel</button>
+          <button class="btn ${opts.danger ? "btn-danger" : "btn-primary"}" data-md="ok">${esc(opts.confirmText || "Save")}</button>
+        </footer>
+      </div></div>`;
+
+    const root = host.firstElementChild;
+    const done = val => { host.innerHTML = ""; modalClose = null;
+      document.removeEventListener("keydown", onKey); resolve(val); };
+    modalClose = () => done(null);
+
+    function collect(){
+      const out = {}; let ok = true;
+      fields.forEach(f => {
+        const el = host.querySelector(`[data-mk="${f.k}"]`);
+        const err = host.querySelector(`[data-me="${f.k}"]`);
+        const v = el.value;
+        let msg = null;
+        if (f.required && !trim(v)) msg = "This cannot be empty.";
+        else { const r = checkField(f.k, v); if (r !== true) msg = r; }
+        el.classList.toggle("bad", !!msg);
+        err.hidden = !msg;
+        if (msg){ err.innerHTML = ICON.warn + "<span>" + esc(msg) + "</span>"; ok = false; }
+        out[f.k] = v;
+      });
+      return ok ? out : null;
+    }
+
+    root.addEventListener("click", e => {
+      if (e.target === root) return done(null);
+      const b = e.target.closest("[data-md]"); if (!b) return;
+      if (b.dataset.md === "cancel") return done(null);
+      const v = fields.length ? collect() : {};
+      if (v) done(v);
+    });
+    function onKey(e){
+      if (e.key === "Escape"){ e.preventDefault(); done(null); }
+      if (e.key === "Enter" && fields.length && e.target.tagName !== "TEXTAREA"){
+        e.preventDefault(); const v = collect(); if (v) done(v);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    const first = host.querySelector("[data-mk]") || host.querySelector('[data-md="ok"]');
+    if (first){ first.focus(); if (first.select) first.select(); }
+  });
+}
+const confirmBox = (title, desc, confirmText, danger) =>
+  dialog({title, desc, confirmText: confirmText || "Yes, do it", danger: danger !== false}).then(v => v !== null);
+
+function toast(msg, kind){
+  const el = document.createElement("div");
+  el.className = kind || "";
+  el.innerHTML = (kind === "bad" ? ICON.warn : ICON.ok) + "<span>" + esc(msg) + "</span>";
+  $("#toast").appendChild(el);
+  setTimeout(() => { el.style.transition = "opacity .3s,transform .3s"; el.style.opacity = 0; el.style.transform = "translateY(8px)";
+    setTimeout(() => el.remove(), 320); }, 3400);
+}
+
+/* ===================================================== boot =========== */
+(async function init(){
+  const modeEl = $("#gateMode");
+  if (!YoloData.hasCloud){
+    modeEl.hidden = false;
+    modeEl.innerHTML = "<b>Supabase is not connected yet.</b><br>Open <code>assets/js/yolo-config.js</code> and paste your project URL + anon key to turn on cloud saving. Until then you can still edit here and publish by downloading <code>data/site.json</code>.";
+    $("#loginForm").hidden = true;
+  } else {
+    const u = await YoloData.currentUser();
+    if (u && u.email){ signedIn = true; return enter(u.email); }
+  }
+})();
+
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = $("#loginBtn"), err = $("#gateErr");
+  err.hidden = true; b.disabled = true; b.textContent = "Signing in…";
+  try {
+    const s = await YoloData.signIn($("#email").value.trim(), $("#pw").value);
+    signedIn = true;
+    await enter((s.user && s.user.email) || $("#email").value.trim());
+  } catch (ex){
+    err.hidden = false; err.textContent = ex.message || "Could not sign in.";
+  } finally { b.disabled = false; b.textContent = "Sign in"; }
+});
+
+$("#offlineBtn").addEventListener("click", () => enter(null));
+
+async function enter(email){
+  $("#gate").hidden = true;
+  $("#app").hidden = false;
+
+  $("#whoDot").classList.toggle("off", !signedIn);
+  $("#whoText").textContent = signedIn ? email : (YoloData.hasCloud ? "Not signed in" : "Local mode");
+  $("#signOut").textContent = signedIn ? "Sign out" : "Back to sign in";
+
+  let data = null;
+  try { data = await YoloData.load(); } catch(e){}
+  if (!data || !data.menu || !data.menu.length) data = JSON.parse(JSON.stringify(BLANK));
+
+  S = normalise(data);
+  baseline = JSON.stringify(S);
+
+  // a newer local draft wins, but tell the user about it
+  try {
+    const raw = localStorage.getItem(DRAFT);
+    if (raw){
+      const d = JSON.parse(raw);
+      if (JSON.stringify(normalise(d)) !== baseline){
+        S = normalise(d);
+        toast("Restored your unpublished draft from this device.");
+      }
+    }
+  } catch(e){}
+
+  markChanged();
+  go("dash");
+}
+
+function normalise(d){
+  const c = Object.assign({}, d.config || {});
+  // data written before the address was split into parts
+  if (c.address && !c.street && !c.city && !c.state) c.street = c.address;
+  delete c.address;
+  const out = {
+    config: Object.assign({}, BLANK.config, c),
+    menu: (d.menu || []).map(c => ({
+      id: c.id || slug(c.name || "category"),
+      name: c.name || "Untitled",
+      hi: c.hi || "",
+      sub: c.sub || "",
+      items: (c.items || []).map(it => ({
+        n: it.n || "",
+        ...(it._pt ? {_pt: it._pt} : {}),
+        d: it.d || "",
+        p: (it.p === undefined ? null : it.p),
+        tags: it.tags ? it.tags.slice() : [],
+        img: it.img || (d.photos && d.photos[it.n]) || ""
+      }))
+    })),
+    photos: Object.assign({}, d.photos || {}),
+    mustTry: (d.mustTry || []).slice()
+  };
+  return out;
+}
+
+$("#signOut").addEventListener("click", async () => {
+  if (dirty() && !await confirmBox("Sign out with unpublished changes?",
+      "Your draft stays saved on this device, but it is not on the website yet.",
+      "Sign out anyway")) return;
+  await YoloData.signOut();
+  location.reload();
+});
+
+$("#burger").addEventListener("click", () => { $("#side").classList.add("open"); $("#scrim").classList.add("show"); });
+$("#scrim").addEventListener("click", () => { $("#side").classList.remove("open"); $("#scrim").classList.remove("show"); });
+
+$("#nav").addEventListener("click", e => {
+  const b = e.target.closest("button[data-view]"); if (!b) return;
+  go(b.dataset.view);
+  $("#side").classList.remove("open"); $("#scrim").classList.remove("show");
+});
+
+const TITLES = {dash:"Dashboard", menu:"Menu", sig:"Signature plates", seo:"Google & SEO", set:"Restaurant details", pub:"Publish"};
+function go(v){
+  currentView = v;
+  $$("#nav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.view === v)));
+  $("#viewTitle").textContent = TITLES[v];
+  $("#view").scrollTop = 0;
+  draw();
+}
+function draw(){ ({dash:viewDash, menu:viewMenu, sig:viewSig, seo:viewSeo, set:viewSet, pub:viewPub})[currentView](); }
+
+/* ===================================================== dashboard ====== */
+function viewDash(){
+  const items = S.menu.flatMap(c => c.items);
+  const noPrice = items.filter(i => i.p === null || i.p === undefined || i.p === "").length;
+  const noPhoto = items.filter(i => !i.img).length;
+  const open = isOpenNow();
+
+  $("#pad").innerHTML = `
+    ${!YoloData.hasCloud ? banner("b", ICON.info, "Running without a backend",
+       "Open <code>assets/js/yolo-config.js</code> and paste your Supabase URL + anon key to save changes straight to the website. Right now you publish by downloading <code>data/site.json</code> and uploading it with the site.") : ""}
+    ${YoloData.hasCloud && !signedIn ? banner("y", ICON.warn, "You are not signed in",
+       "You can edit here, but publishing to the live website needs a sign-in.") : ""}
+    ${noPrice ? banner("y", ICON.warn, noPrice + " dish" + (noPrice===1?"":"es") + " without a price",
+       "Those show <em>“Ask staff”</em> on the website. Add prices from the Menu tab.") : ""}
+
+    <div class="stats" style="margin-bottom:18px">
+      <div class="stat accent"><b class="num">${countItems(S)}</b><span>Dishes</span></div>
+      <div class="stat"><b class="num">${S.menu.length}</b><span>Categories</span></div>
+      <div class="stat ${noPrice?"warn":""}"><b class="num">${noPrice}</b><span>Ask staff</span></div>
+      <div class="stat"><b class="num">${S.mustTry.length}</b><span>Signature</span></div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>Right now</h2>
+        <p class="desc">What a guest opening the website sees at this moment.</p>
+        <div class="kv">
+          <div><span class="k">Status</span><span class="v">${open
+            ? '<span class="chip g">Open · till ' + fmt12(S.config.close) + '</span>'
+            : '<span class="chip r">Closed · opens ' + fmt12(S.config.open) + '</span>'}</span></div>
+          <div><span class="k">Name</span><span class="v">${esc(S.config.name)}</span></div>
+          <div><span class="k">Phone</span><span class="v">${esc(S.config.phone) || "—"}</span></div>
+          <div><span class="k">WhatsApp orders</span><span class="v">${S.config.whatsapp ? esc(S.config.whatsapp) : '<span class="chip">Guest picks a chat</span>'}</span></div>
+          <div><span class="k">Address</span><span class="v">${esc(addressLine()) || "—"}</span></div>
+          <div><span class="k">Dishes without a photo</span><span class="v">${noPhoto}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Quick actions</h2>
+        <p class="desc">The things you will do most often.</p>
+        <div class="grid" style="gap:10px">
+          <button class="btn" data-act="go-menu">${ICON.edit} Change prices or dishes</button>
+          <button class="btn" data-act="go-set">${ICON.edit} Edit address, phone &amp; timings</button>
+          <button class="btn" data-act="go-sig">${ICON.star} Choose signature plates</button>
+          <button class="btn" data-act="go-seo">${ICON.search} Check Google &amp; SEO</button>
+          <button class="btn btn-primary" data-act="go-pub">${ICON.down} Publish to the website</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Categories at a glance</h2>
+      <p class="desc">Click any category to jump straight into it.</p>
+      <div class="picks">
+        ${S.menu.map((c,i) => `<button class="pickcard" data-cat="${i}">
+          <div class="t"><b>${esc(c.name)}</b><span>${c.items.length} dish${c.items.length===1?"":"es"}</span></div>
+        </button>`).join("") || '<p class="desc">No categories yet — add one from the Menu tab.</p>'}
+      </div>
+    </div>`;
+
+  $("#pad").addEventListener("click", e => {
+    const a = e.target.closest("[data-act]");
+    if (a){ go({"go-menu":"menu","go-set":"set","go-sig":"sig","go-seo":"seo","go-pub":"pub"}[a.dataset.act]); return; }
+    const c = e.target.closest("[data-cat]");
+    if (c){ activeCat = +c.dataset.cat; go("menu"); }
+  }, {once:true});
+}
+
+const banner = (k, icon, title, body) =>
+  `<div class="banner ${k}">${icon}<div><b>${title}</b><p>${body}</p></div></div>`;
+
+function fmt12(t){
+  const [h,m] = String(t||"00:00").split(":").map(Number);
+  return `${((h+11)%12)+1}${m?":"+String(m).padStart(2,"0"):""} ${h>=12?"PM":"AM"}`;
+}
+function isOpenNow(){
+  const now = new Date(), mins = now.getHours()*60 + now.getMinutes();
+  const [oh,om] = String(S.config.open||"00:00").split(":").map(Number);
+  const [ch,cm] = String(S.config.close||"00:00").split(":").map(Number);
+  const o = oh*60+om, c = ch*60+cm;
+  return c > o ? (mins >= o && mins < c) : (mins >= o || mins < c);
+}
+
+/* ===================================================== menu =========== */
+function priceLabel(p){
+  if (p === null || p === undefined || p === "") return {t:"Ask staff", ask:true};
+  if (typeof p === "object"){
+    const parts = Object.keys(p)
+      .filter(k => p[k] !== null && p[k] !== undefined && p[k] !== "")
+      .map(k => k + " " + rupee(p[k]));
+    return parts.length ? {t: parts.join("  ·  ")} : {t:"Ask staff", ask:true};
+  }
+  return {t: rupee(p)};
+}
+
+function viewMenu(){
+  if (!S.menu.length){
+    $("#pad").innerHTML = `<div class="card"><h2>No categories yet</h2>
+      <p class="desc">Start by adding one — Thali, Momos, Drinks, anything.</p>
+      <button class="btn btn-primary" id="firstCat">${ICON.plus} Add the first category</button></div>`;
+    $("#firstCat").onclick = addCategory;
+    return;
+  }
+  activeCat = Math.min(activeCat, S.menu.length - 1);
+  const cat = S.menu[activeCat];
+  const q = itemQuery.toLowerCase();
+  const rows = cat.items
+    .map((it, i) => ({it, i}))
+    .filter(({it}) => !q || (it.n + " " + (it.d||"")).toLowerCase().includes(q));
+
+  $("#pad").innerHTML = `
+    <div class="editor">
+      <div class="catlist">
+        <header><b>Categories</b><span class="tally" style="margin-left:auto;font-size:12px;color:var(--text-3)">${S.menu.length}</span></header>
+        <ul id="cats">
+          ${S.menu.map((c,i) => `<li data-i="${i}" ${i===activeCat?'aria-current="true"':""} draggable="true">
+            <span class="grip" title="Drag to reorder">${ICON.grip}</span>
+            <button class="pick" data-pick="${i}"><b>${esc(c.name)}</b><span>${c.items.length} dish${c.items.length===1?"":"es"}</span></button>
+            <button class="btn-icon" data-editcat="${i}" title="Rename">${ICON.edit}</button>
+            <button class="btn-icon" data-delcat="${i}" title="Delete" style="color:var(--bad)">${ICON.trash}</button>
+          </li>`).join("")}
+        </ul>
+        <footer><button class="btn btn-ghost btn-sm" id="addCat" style="width:100%">${ICON.plus} Add category</button></footer>
+      </div>
+
+      <div class="items">
+        <header>
+          <h2>${esc(cat.name)}</h2>
+          <span class="cnt">${rows.length} of ${cat.items.length}</span>
+          <div class="grow"></div>
+          <div class="search">${ICON.search}<input type="text" id="q" placeholder="Find a dish…" value="${esc(itemQuery)}"></div>
+          <button class="btn btn-primary btn-sm" id="addItem">${ICON.plus} Add dish</button>
+        </header>
+        <div class="rows" id="rows">
+          ${rows.length ? rows.map(({it,i}) => itemRow(it, i)).join("")
+            : `<div class="empty">${itemQuery ? "No dish matches “" + esc(itemQuery) + "”." : "This category is empty. Add the first dish."}</div>`}
+        </div>
+      </div>
+    </div>`;
+
+  wireMenu();
+}
+
+function itemRow(it, i){
+  const key = activeCat + ":" + i;
+  const isOpen = openItem === key;
+  const pl = priceLabel(it.p);
+  const featured = S.mustTry.includes(slug(it.n));
+  const type = it._pt || (it.p === null || it.p === undefined || it.p === "" ? "ask" : (typeof it.p === "object" ? "two" : "one"));
+
+  return `<div class="row ${isOpen?"open":""}" data-i="${i}" draggable="true">
+    <span class="grip" title="Drag to reorder">${ICON.grip}</span>
+    <button class="head" data-toggle="${i}">
+      <span class="nm">${esc(it.n) || "<em style='color:var(--text-3)'>Untitled dish</em>"}</span>
+      <span class="pr ${pl.ask?"ask":""}">${esc(pl.t)}</span>
+      ${(it.tags||[]).includes("sig") ? '<span class="chip y">YOLO special</span>' : ""}
+      ${(it.tags||[]).includes("value") ? '<span class="chip">Full meal</span>' : ""}
+      ${it.d ? `<span class="dd">${esc(it.d)}</span>` : ""}
+    </button>
+    <div class="tools">
+      <button class="star" data-fav="${i}" aria-pressed="${featured}" title="Show in Signature plates">${featured?ICON.starF:ICON.star}</button>
+      <button class="btn-icon" data-del="${i}" title="Delete dish" style="color:var(--bad)">${ICON.trash}</button>
+    </div>
+
+    ${isOpen ? `<div class="body">
+      <div class="field">
+        <label for="n${i}">Dish name</label>
+        <input type="text" id="n${i}" data-f="n" value="${esc(it.n)}" placeholder="Paneer Butter Masala">
+      </div>
+      <div class="field">
+        <label for="img${i}">Photo</label>
+        <div class="thumbrow">
+          <div class="field" style="gap:6px">
+            <input type="text" id="img${i}" data-f="img" value="${esc(it.img)}" placeholder="Pexels ID or image link">
+          </div>
+          <img class="thumb" id="th${i}" src="${thumbSrc(it.img)}" alt="" onerror="this.style.visibility='hidden'">
+        </div>
+        <span class="hint">A Pexels photo number (e.g. <code>1639557</code>) or a full image URL.</span>
+      </div>
+
+      <div class="field full">
+        <label for="d${i}">What's in it <span style="text-transform:none;letter-spacing:0;color:var(--text-3)">(optional)</span></label>
+        <input type="text" id="d${i}" data-f="d" value="${esc(it.d)}" placeholder="Dal Makhani + 2 Roti + Half Rice">
+      </div>
+
+      <div class="field full">
+        <label>Price</label>
+        <div class="pricebox ${type==="two"?"two":""}">
+          <select data-f="ptype">
+            <option value="one" ${type==="one"?"selected":""}>Single price</option>
+            <option value="two" ${type==="two"?"selected":""}>Half / Full</option>
+            <option value="ask" ${type==="ask"?"selected":""}>Ask staff</option>
+          </select>
+          ${type === "one" ? `<input type="number" min="0" step="1" data-f="p1" value="${it.p ?? ""}" placeholder="₹ price">`
+            : type === "two" ? `<input type="number" min="0" step="1" data-f="pHalf" value="${it.p.Half ?? ""}" placeholder="Half ₹">
+                                <input type="number" min="0" step="1" data-f="pFull" value="${it.p.Full ?? ""}" placeholder="Full ₹">`
+            : `<span class="hint" style="align-self:center">The website shows “Ask staff” and the price is settled at the counter.</span>`}
+        </div>
+      </div>
+
+      <div class="field full">
+        <label>Badges</label>
+        <div class="tagrow">
+          <label class="check"><input type="checkbox" data-f="tag-sig" ${(it.tags||[]).includes("sig")?"checked":""}> YOLO special</label>
+          <label class="check"><input type="checkbox" data-f="tag-value" ${(it.tags||[]).includes("value")?"checked":""}> Full meal</label>
+          <label class="check"><input type="checkbox" data-f="fav" ${featured?"checked":""}> Show in Signature plates</label>
+        </div>
+      </div>
+
+      <div class="field full">
+        <label>This dish</label>
+        <div class="tagrow">
+          <button class="btn btn-sm" data-dup="${i}">Duplicate</button>
+          <button class="btn btn-sm" data-move="${i}">Move to another category…</button>
+          <button class="btn btn-sm btn-danger" data-del="${i}">Delete</button>
+        </div>
+      </div>
+    </div>` : ""}
+  </div>`;
+}
+
+function thumbSrc(img){
+  if (!img) return "";
+  if (/^(https?:|data:|\.{0,2}\/)/.test(img)) return img;
+  return `https://images.pexels.com/photos/${img}/pexels-photo-${img}.jpeg?auto=compress&cs=tinysrgb&w=110&h=110&fit=crop`;
+}
+
+function wireMenu(){
+  $("#addCat").onclick = addCategory;
+  $("#addItem").onclick = () => {
+    S.menu[activeCat].items.unshift({n:"", d:"", p:null, _pt:"one", tags:[], img:""});
+    openItem = activeCat + ":0";
+    markChanged(); viewMenu();
+    const el = $("#rows input[data-f=n]"); if (el) el.focus();
+  };
+
+  const q = $("#q");
+  q.oninput = () => { itemQuery = q.value; const pos = q.selectionStart; viewMenu();
+    const nq = $("#q"); if (nq){ nq.focus(); nq.setSelectionRange(pos,pos); } };
+
+  $("#cats").onclick = e => {
+    const p = e.target.closest("[data-pick]");
+    if (p){ activeCat = +p.dataset.pick; openItem = null; itemQuery = ""; return viewMenu(); }
+    const ed = e.target.closest("[data-editcat]");
+    if (ed) return renameCategory(+ed.dataset.editcat);
+    const del = e.target.closest("[data-delcat]");
+    if (del) return deleteCategory(+del.dataset.delcat);
+  };
+
+  const rows = $("#rows");
+  rows.onclick = async e => {
+    const t = e.target.closest("[data-toggle]");
+    if (t){ const k = activeCat + ":" + t.dataset.toggle; openItem = (openItem === k) ? null : k; return viewMenu(); }
+    const f = e.target.closest("[data-fav]");
+    if (f){ toggleFav(S.menu[activeCat].items[+f.dataset.fav]); markChanged(); return viewMenu(); }
+    const d = e.target.closest("[data-del]");
+    if (d){
+      const i = +d.dataset.del, it = S.menu[activeCat].items[i];
+      if (!await confirmBox(`Delete “${it.n || "this dish"}”?`,
+          "It disappears from the website the next time you publish.", "Delete dish")) return;
+      S.menu[activeCat].items.splice(i, 1);
+      openItem = null; markChanged(); return viewMenu();
+    }
+    const dup = e.target.closest("[data-dup]");
+    if (dup){
+      const i = +dup.dataset.dup, it = S.menu[activeCat].items[i];
+      const copy = JSON.parse(JSON.stringify(it));
+      copy.n = (it.n || "Untitled") + " (copy)";
+      S.menu[activeCat].items.splice(i + 1, 0, copy);
+      openItem = activeCat + ":" + (i + 1); markChanged(); viewMenu();
+      toast("Dish duplicated — rename it and set the price.");
+      return;
+    }
+    const mv = e.target.closest("[data-move]");
+    if (mv){
+      const i = +mv.dataset.move, it = S.menu[activeCat].items[i];
+      const others = S.menu.map((c, ci) => ({c, ci})).filter(x => x.ci !== activeCat);
+      if (!others.length) return toast("There is no other category to move it to.", "bad");
+      const v = await dialog({
+        title: `Move “${it.n || "this dish"}”`,
+        desc: "Pick the category it should sit in.",
+        fields: [{k:"cat", label:"Category", type:"text", value:"",
+          placeholder: others[0].c.name,
+          hint: "Type the category name: " + others.map(x => x.c.name).join(", ")}],
+        confirmText: "Move dish"
+      });
+      if (!v) return;
+      const want = trim(v.cat).toLowerCase();
+      const target = others.find(x => x.c.name.toLowerCase() === want)
+                  || others.find(x => x.c.name.toLowerCase().startsWith(want) && want);
+      if (!target) return toast("No category called “" + v.cat + "”.", "bad");
+      S.menu[activeCat].items.splice(i, 1);
+      S.menu[target.ci].items.push(it);
+      openItem = null; markChanged(); viewMenu();
+      toast(`Moved to ${target.c.name}.`);
+      return;
+    }
+  };
+
+  rows.oninput = e => {
+    const el = e.target.closest("[data-f]"); if (!el) return;
+    const row = el.closest(".row"); const it = S.menu[activeCat].items[+row.dataset.i];
+    const f = el.dataset.f;
+    if (f === "n"){ const old = it.n; it.n = el.value; renameInPicks(old, it.n); }
+    else if (f === "d") it.d = el.value;
+    else if (f === "img"){ it.img = el.value.trim(); const th = row.querySelector(".thumb");
+      if (th){ th.style.visibility = "visible"; th.src = thumbSrc(it.img); } }
+    else if (f === "p1") it.p = el.value === "" ? null : Number(el.value);
+    else if (f === "pHalf" || f === "pFull"){
+      if (typeof it.p !== "object" || !it.p) it.p = {};
+      it.p[f === "pHalf" ? "Half" : "Full"] = el.value === "" ? null : Number(el.value);
+    }
+    markChanged();
+    if (f === "n"){ const h = row.querySelector(".head .nm"); if (h) h.textContent = it.n || "Untitled dish"; }
+    if (f === "p1" || f === "pHalf" || f === "pFull"){
+      const pr = row.querySelector(".head .pr"), pl = priceLabel(it.p);
+      if (pr){ pr.textContent = pl.t; pr.classList.toggle("ask", !!pl.ask); }
+    }
+  };
+
+  rows.onchange = e => {
+    const el = e.target.closest("[data-f]"); if (!el) return;
+    const row = el.closest(".row"); const it = S.menu[activeCat].items[+row.dataset.i];
+    const f = el.dataset.f;
+    if (f === "ptype"){
+      it._pt = el.value;
+      if (el.value === "ask") it.p = null;
+      else if (el.value === "two") it.p = {Half:null, Full:(typeof it.p === "number" ? it.p : null)};
+      else it.p = (it.p && typeof it.p === "object") ? (it.p.Full ?? it.p.Half ?? null) : it.p;
+      markChanged(); return viewMenu();
+    }
+    if (f === "tag-sig" || f === "tag-value"){
+      const tag = f.split("-")[1]; it.tags = it.tags || [];
+      const at = it.tags.indexOf(tag);
+      if (el.checked && at < 0) it.tags.push(tag); else if (!el.checked && at > -1) it.tags.splice(at,1);
+      markChanged(); return viewMenu();
+    }
+    if (f === "fav"){ toggleFav(it); markChanged(); return viewMenu(); }
+  };
+
+  dragSort($("#cats"), "li", (from, to) => {
+    const [m] = S.menu.splice(from,1); S.menu.splice(to,0,m);
+    if (activeCat === from) activeCat = to;
+    else if (from < activeCat && to >= activeCat) activeCat--;
+    else if (from > activeCat && to <= activeCat) activeCat++;
+    openItem = null; markChanged(); viewMenu();
+  });
+  dragSort(rows, ".row", (from, to) => {
+    if (itemQuery) return toast("Clear the search box before reordering.", "bad");
+    const list = S.menu[activeCat].items;
+    const [m] = list.splice(from,1); list.splice(to,0,m);
+    openItem = null; markChanged(); viewMenu();
+  });
+}
+
+function toggleFav(it){
+  const id = slug(it.n);
+  const at = S.mustTry.indexOf(id);
+  if (at > -1) S.mustTry.splice(at,1);
+  else { if (S.mustTry.length >= 12) return toast("Keep the signature reel to 12 plates or fewer.", "bad"); S.mustTry.push(id); }
+}
+function renameInPicks(oldName, newName){
+  const o = slug(oldName), n = slug(newName), at = S.mustTry.indexOf(o);
+  if (at > -1) S.mustTry[at] = n;
+}
+
+async function addCategory(){
+  const v = await dialog({
+    title: "Add a category",
+    desc: "Categories are the sections of the menu — Thali, Momos, Drinks.",
+    fields: [
+      {k:"name", label:"Category name", value:"", placeholder:"Momos", required:true},
+      {k:"hi", label:"Hindi name (optional)", value:"", placeholder:"मोमोज़"},
+      {k:"sub", label:"One line under the heading (optional)", value:"",
+       placeholder:"Steamed, fried and tandoori."}
+    ],
+    confirmText: "Add category"
+  });
+  if (!v) return;
+  let id = slug(v.name), k = 2;
+  while (S.menu.some(c => c.id === id)) id = slug(v.name) + "-" + (k++);
+  S.menu.push({id, name:trim(v.name), hi:trim(v.hi), sub:trim(v.sub), items:[]});
+  activeCat = S.menu.length - 1; openItem = null; itemQuery = "";
+  markChanged(); viewMenu();
+  toast(`“${trim(v.name)}” added. Now add its dishes.`);
+}
+async function renameCategory(i){
+  const c = S.menu[i];
+  const v = await dialog({
+    title: "Edit category",
+    desc: "The web address of this section stays the same, so existing links keep working.",
+    fields: [
+      {k:"name", label:"Category name", value:c.name, required:true},
+      {k:"hi", label:"Hindi name (optional)", value:c.hi || "", placeholder:"मोमोज़"},
+      {k:"sub", label:"One line under the heading (optional)", value:c.sub || ""}
+    ],
+    confirmText: "Save changes"
+  });
+  if (!v) return;
+  c.name = trim(v.name) || c.name; c.hi = trim(v.hi); c.sub = trim(v.sub);
+  markChanged(); viewMenu();
+}
+async function deleteCategory(i){
+  const c = S.menu[i];
+  if (!await confirmBox(`Delete “${c.name}”?`,
+      `Its ${c.items.length} dish${c.items.length===1?"":"es"} ${c.items.length===1?"goes":"go"} with it. This cannot be undone once you publish.`,
+      "Delete category")) return;
+  S.menu.splice(i,1);
+  activeCat = Math.max(0, Math.min(activeCat, S.menu.length-1));
+  openItem = null; markChanged(); viewMenu();
+}
+
+/* drag-to-reorder helper shared by categories and dishes */
+function dragSort(root, sel, done){
+  if (!root) return;
+  let from = null;
+  root.addEventListener("dragstart", e => {
+    const el = e.target.closest(sel); if (!el) return;
+    from = Array.from(root.querySelectorAll(sel)).indexOf(el);
+    e.dataTransfer.effectAllowed = "move";
+    try { e.dataTransfer.setData("text/plain", String(from)); } catch(ex){}
+  });
+  root.addEventListener("dragover", e => {
+    const el = e.target.closest(sel); if (!el || from === null) return;
+    e.preventDefault();
+    root.querySelectorAll(sel).forEach(x => x.classList.remove("drag-over"));
+    el.classList.add("drag-over");
+  });
+  root.addEventListener("dragleave", e => {
+    const el = e.target.closest(sel); if (el) el.classList.remove("drag-over");
+  });
+  root.addEventListener("drop", e => {
+    const el = e.target.closest(sel); if (!el || from === null) return;
+    e.preventDefault();
+    const to = Array.from(root.querySelectorAll(sel)).indexOf(el);
+    el.classList.remove("drag-over");
+    if (to > -1 && to !== from) done(from, to);
+    from = null;
+  });
+  root.addEventListener("dragend", () => {
+    root.querySelectorAll(sel).forEach(x => x.classList.remove("drag-over"));
+    from = null;
+  });
+}
+
+/* ===================================================== signature ====== */
+function viewSig(){
+  const all = S.menu.flatMap(c => c.items.map(it => ({it, cat:c.name})));
+  $("#pad").innerHTML = `
+    ${banner("b", ICON.info, "The reel on the home page",
+      "Pick the plates you want guests to see first. Between 6 and 10 works best — they scroll sideways on desktop.")}
+    <div class="card">
+      <h2>Signature plates <span style="color:var(--text-3);font-weight:400">· ${S.mustTry.length} chosen</span></h2>
+      <p class="desc">Click a dish to add or remove it.</p>
+      <div class="search" style="max-width:320px;margin-bottom:16px">${ICON.search}
+        <input type="text" id="sq" placeholder="Find a dish…"></div>
+      <div class="picks" id="picks">
+        ${all.map(({it,cat}) => pickCard(it, cat)).join("")}
+      </div>
+    </div>`;
+
+  const redraw = q => {
+    const t = q.toLowerCase();
+    $("#picks").innerHTML = all
+      .filter(({it,cat}) => !t || (it.n + " " + cat).toLowerCase().includes(t))
+      .map(({it,cat}) => pickCard(it, cat)).join("") || '<p class="desc">Nothing matches.</p>';
+  };
+  $("#sq").oninput = e => redraw(e.target.value);
+  $("#picks").onclick = e => {
+    const b = e.target.closest("[data-sig]"); if (!b) return;
+    const it = S.menu.flatMap(c => c.items).find(x => slug(x.n) === b.dataset.sig);
+    if (it){ toggleFav(it); markChanged(); redraw($("#sq").value);
+      $("#tallySig").textContent = S.mustTry.length; }
+  };
+}
+function pickCard(it, cat){
+  const on = S.mustTry.includes(slug(it.n));
+  return `<button class="pickcard" data-sig="${esc(slug(it.n))}" aria-pressed="${on}">
+    <img src="${thumbSrc(it.img)}" alt="" onerror="this.style.visibility='hidden'">
+    <span class="t"><b>${esc(it.n) || "Untitled"}</b><span>${esc(cat)}</span></span>
+    <span class="mk">${ICON.check}</span>
+  </button>`;
+}
+
+/* ===================================================== settings ======= */
+const GROUPS = [
+  ["Identity", "What the restaurant is called and how it is described.", [
+    ["name","Restaurant name","text","YOLO Eats",""],
+    ["nameHi","Hindi name","text","योलो","Shown as a small accent on the site."],
+    ["kind","What kind of place","text","Pure Veg Family Restaurant","Goes into the page title Google shows."],
+    ["cuisine","Cuisines","text","Punjabi · Chaap · Momos · Chinese · Pizza","Separate with ·"],
+    ["tagline","One-line pitch","textarea","","Appears under the headline on the home page."]
+  ]],
+  ["Address", "Google uses these exact fields to place you on the map and in “near me” searches.", [
+    ["street","Street / building","text","NH-44, Main Market",""],
+    ["locality","Area or mohalla","text","Lakhanpur","Optional."],
+    ["city","City or town","text","Kathua","Important — this is what people search with."],
+    ["state","State","text","Jammu & Kashmir",""],
+    ["postalCode","PIN code","text","184101",""],
+    ["landmark","Landmark","text","near Pathankot","A nearby well-known place. Used in the page copy and the FAQ."]
+  ]],
+  ["On the map", "Open Google Maps, right-click your restaurant, click the numbers to copy them.", [
+    ["mapsUrl","Google Maps link","url","https://maps.google.com/?q=…","The “Get directions” button."],
+    ["lat","Latitude","text","32.3700",""],
+    ["lng","Longitude","text","75.5200",""]
+  ]],
+  ["Contact", "How guests reach you and order.", [
+    ["phone","Phone","text","+91 98765 43210","Used for the call button."],
+    ["whatsapp","WhatsApp number","text","919876543210","Country code, no + or spaces. Leave empty and the guest picks their own chat."],
+    ["email","Email","email","hello@yollo.co.in","Optional."]
+  ]],
+  ["Opening hours", "The site shows a live “Open now / Closed” badge from these.", [
+    ["open","Opening time","time","",""],
+    ["close","Closing time","time","",""]
+  ]]
+];
+
+function viewSet(){
+  $("#pad").innerHTML = `
+    <div class="grid cols-2" style="align-items:start">
+      ${GROUPS.map(([title, desc, fields], gi) => `
+        <div class="card">
+          <h2>${title}</h2>
+          <p class="desc">${desc}</p>
+          <div class="grid ${fields.length > 4 ? "" : ""}" style="gap:16px">
+            ${fields.map(setField).join("")}
+          </div>
+          ${gi === 4 ? `<div style="margin-top:14px">${isOpenNow()
+            ? '<span class="chip g">Open right now</span>'
+            : '<span class="chip r">Closed right now</span>'}</div>` : ""}
+        </div>`).join("")}
+    </div>`;
+  wireConfigInputs();
+}
+
+function setField([k, label, type, ph, hint]){
+  const v = esc(S.config[k] || "");
+  const input = type === "textarea"
+    ? `<textarea id="f-${k}" data-k="${k}" placeholder="${esc(ph)}">${v}</textarea>`
+    : `<input type="${type}" id="f-${k}" data-k="${k}" value="${v}" placeholder="${esc(ph)}" autocomplete="off">`;
+  return `<div class="field"><label for="f-${k}">${label}</label>${input}` +
+    `${hint?`<span class="hint">${hint}</span>`:""}<span class="err" data-e="${k}" hidden></span></div>`;
+}
+
+/* shared by Settings and SEO: write-through + inline validation */
+function wireConfigInputs(){
+  $("#pad").addEventListener("input", e => {
+    const el = e.target.closest("[data-k]"); if (!el) return;
+    const k = el.dataset.k;
+    S.config[k] = el.value;
+    const err = $("#pad").querySelector(`[data-e="${k}"]`);
+    if (err){
+      const r = checkField(k, el.value);
+      err.hidden = r === true;
+      el.classList.toggle("bad", r !== true);
+      if (r !== true) err.innerHTML = ICON.warn + "<span>" + esc(r) + "</span>";
+    }
+    markChanged();
+    if (currentView === "seo") refreshSerp();
+  });
+}
+
+function configErrors(){
+  const out = [];
+  Object.keys(CHECK).forEach(k => {
+    const r = checkField(k, S.config[k]);
+    if (r !== true) out.push({k, msg: r});
+  });
+  return out;
+}
+
+/* ===================================================== SEO ============= */
+function autoTitle(){
+  if (trim(S.config.metaTitle)) return trim(S.config.metaTitle);
+  const city = trim(S.config.city), st = trim(S.config.state);
+  let t = `${S.config.name} | ${S.config.kind}${city ? " in " + city : ""}`;
+  if (st && (t + ", " + st).length <= 60) t += ", " + st;
+  return t;
+}
+function autoDesc(){
+  if (trim(S.config.metaDescription)) return trim(S.config.metaDescription);
+  const city = trim(S.config.city), lm = trim(S.config.landmark);
+  const where = city ? ` in ${city}${lm ? ", " + lm : ""}` : "";
+  return `${S.config.name} — 100% pure veg family restaurant${where}. Thalis, tandoori chaap, momos, paneer and veg pizza. Open ${fmt12(S.config.open)}–${fmt12(S.config.close)}. Order on WhatsApp.`;
+}
+function autoKeywords(){
+  if (trim(S.config.keywords)) return trim(S.config.keywords);
+  const city = trim(S.config.city), st = trim(S.config.state), lm = trim(S.config.landmark);
+  const dishes = ["pure veg restaurant","vegetarian restaurant","family restaurant","Punjabi thali",
+                  "tandoori chaap","momos","paneer dishes","veg pizza","chinese food","best veg restaurant"];
+  const out = [S.config.name];
+  dishes.forEach(d => out.push(city ? d + " " + city : d));
+  if (st) out.push("pure veg restaurant " + st, "restaurant in " + st);
+  if (lm) out.push("restaurant " + lm, "pure veg restaurant " + lm);
+  out.push("veg thali near me","momos near me","restaurant near me","dine in","takeaway","family dining","WhatsApp food order");
+  return out.filter(Boolean).join(", ");
+}
+function prettyUrl(){
+  const u = trim(S.config.siteUrl) || "https://yollo.co.in/";
+  return u.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+}
+
+function counter(len, lo, hi, what){
+  const k = len === 0 ? "" : (len < lo ? "warn" : len > hi ? "bad" : "good");
+  const note = len === 0 ? "using the automatic text"
+    : len < lo ? "a little short" : len > hi ? "Google will cut it off" : "good length";
+  return `<div class="counter ${k}"><span>${what}</span><span><b>${len}</b> / ${hi} · ${note}</span></div>`;
+}
+
+function seoHealth(){
+  const items = flatItems();
+  const noPrice = items.filter(i => i.p === null || i.p === undefined || i.p === "").length;
+  const noPhoto = items.filter(i => !i.img).length;
+  const d = autoDesc().length, t = autoTitle().length;
+  const rows = [
+    [trim(S.config.siteUrl) && !/YOUR-DOMAIN/.test(S.config.siteUrl), "Website address is set",
+     "Without it, sharing links and Google listings break."],
+    [trim(S.config.city) && trim(S.config.state), "City and state filled in",
+     "This is what puts you in “restaurant near me” results."],
+    [trim(S.config.street), "Street address filled in", "Google wants a full postal address."],
+    [trim(S.config.phone), "Phone number set", "Shown in search results and on the call button."],
+    [trim(S.config.whatsapp), "WhatsApp number set", "Without it guests have to pick a chat themselves.", true],
+    [trim(S.config.mapsUrl), "Google Maps link set", "Powers the “Get directions” button."],
+    [trim(S.config.lat) && trim(S.config.lng), "Map coordinates set",
+     "Helps Google place you exactly on the map.", true],
+    [t > 0 && t <= 60, "Page title is a good length", `Right now it is ${t} characters; keep it under 60.`],
+    [d >= 120 && d <= 165, "Meta description is a good length", `Right now it is ${d} characters; aim for 120–165.`],
+    [noPrice === 0, "Every dish has a price",
+     noPrice ? `${noPrice} dish${noPrice===1?"":"es"} still say “Ask staff” — priced dishes can show in Google.` : "", true],
+    [noPhoto === 0, "Every dish has a photo",
+     noPhoto ? `${noPhoto} dish${noPhoto===1?"":"es"} have no photo.` : "", true],
+    [S.mustTry.length >= 6 && S.mustTry.length <= 10, "6–10 signature plates chosen",
+     `You have ${S.mustTry.length}.`, true]
+  ];
+  return `<div class="health">${rows.map(([ok, title, note, soft]) => {
+    const cls = ok ? "pass" : (soft ? "warn" : "fail");
+    const ic = ok ? ICON.ok : (soft ? ICON.warn : ICON.warn);
+    return `<div class="${cls}">${ic}<div><b>${esc(title)}</b>${(!ok && note) ? `<span>${esc(note)}</span>` : ""}</div></div>`;
+  }).join("")}</div>`;
+}
+const flatItems = () => S.menu.flatMap(c => c.items);
+
+function viewSeo(){
+  $("#pad").innerHTML = `
+    ${banner("b", ICON.info, "How this page works",
+      "Leave a box empty and the website writes that bit for you from the restaurant details. Fill one in only when you want to say something different from the automatic text.")}
+
+    <div class="grid cols-2" style="align-items:start">
+      <div class="grid" style="gap:16px">
+        <div class="card">
+          <h2>What Google shows</h2>
+          <p class="desc">A live preview of your search result. It updates as you type.</p>
+          <div id="serp"></div>
+        </div>
+
+        <div class="card">
+          <h2>Search engine text</h2>
+          <p class="desc">Keep the title short and put the town in it — that is what people actually type.</p>
+          <div class="grid" style="gap:16px">
+            <div class="field">
+              <label for="f-siteUrl">Website address</label>
+              <input type="url" id="f-siteUrl" data-k="siteUrl" value="${esc(S.config.siteUrl||"")}" placeholder="https://yollo.co.in/" autocomplete="off">
+              <span class="hint">With the trailing slash.</span>
+              <span class="err" data-e="siteUrl" hidden></span>
+            </div>
+            <div class="field">
+              <label for="f-metaTitle">Page title</label>
+              <input type="text" id="f-metaTitle" data-k="metaTitle" value="${esc(S.config.metaTitle||"")}" placeholder="${esc(autoTitle())}" autocomplete="off">
+              <div id="cTitle"></div>
+            </div>
+            <div class="field">
+              <label for="f-metaDescription">Meta description</label>
+              <textarea id="f-metaDescription" data-k="metaDescription" placeholder="${esc(autoDesc())}" style="min-height:96px">${esc(S.config.metaDescription||"")}</textarea>
+              <div id="cDesc"></div>
+            </div>
+            <div class="field">
+              <label for="f-keywords">Keywords</label>
+              <textarea id="f-keywords" data-k="keywords" placeholder="${esc(autoKeywords())}" style="min-height:110px">${esc(S.config.keywords||"")}</textarea>
+              <span class="hint">Comma separated. Leave empty and the site builds a local list from your town, state and landmark.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" style="gap:16px">
+        <div class="card">
+          <h2>SEO checklist</h2>
+          <p class="desc">Everything that affects how well you show up. Yellow items are worth doing; red ones matter.</p>
+          <div id="health"></div>
+        </div>
+        <div class="card">
+          <h2>After you publish</h2>
+          <p class="desc">Two free things that do more for a restaurant than anything else:</p>
+          <div class="kv">
+            <div><span class="k">1</span><span class="v" style="text-align:left">Create a <b>Google Business Profile</b> and put this website link in it. That is what shows your restaurant on Maps.</span></div>
+            <div><span class="k">2</span><span class="v" style="text-align:left">Add the site to <b>Google Search Console</b> and submit <code>sitemap.xml</code> so Google indexes the menu.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  refreshSerp();
+  wireConfigInputs();
+}
+
+function refreshSerp(){
+  const serp = $("#serp"); if (!serp) return;
+  serp.innerHTML = `<div class="serp">
+      <div class="u"><span class="fav"><img src="../assets/logo.png" alt=""></span>
+        <span class="site">${esc(S.config.name)}<small>${esc(prettyUrl())}</small></span></div>
+      <div class="t">${esc(autoTitle())}</div>
+      <div class="d">${esc(autoDesc())}</div>
+    </div>`;
+  const ct = $("#cTitle"), cd = $("#cDesc"), h = $("#health");
+  if (ct) ct.innerHTML = counter(autoTitle().length, 30, 60, "Page title");
+  if (cd) cd.innerHTML = counter(autoDesc().length, 120, 165, "Meta description");
+  if (h) h.innerHTML = seoHealth();
+}
+
+/* ===================================================== publish ======== */
+function viewPub(){
+  const d = dirty();
+  $("#pad").innerHTML = `
+    ${d ? banner("y", ICON.warn, "You have unpublished changes", "Nothing on the live website has changed yet.")
+        : banner("b", ICON.ok, "Everything is published", "The website matches what you see here.")}
+
+    <div class="grid cols-2" style="align-items:start">
+      <div class="card">
+        <h2>Publish to the website</h2>
+        <p class="desc">${YoloData.hasCloud
+          ? "Saves straight to Supabase. The website picks it up the moment a guest loads the page — no re-upload needed."
+          : "Supabase is not connected, so publishing means downloading <code>data/site.json</code> and uploading it to your hosting, next to <code>index.html</code>."}</p>
+
+        <div class="kv" style="margin-bottom:18px">
+          <div><span class="k">Backend</span><span class="v">${YoloData.hasCloud ? '<span class="chip g">Supabase connected</span>' : '<span class="chip">Not connected</span>'}</span></div>
+          <div><span class="k">Signed in</span><span class="v">${signedIn ? '<span class="chip g">Yes</span>' : '<span class="chip r">No</span>'}</span></div>
+          <div><span class="k">Categories</span><span class="v num">${S.menu.length}</span></div>
+          <div><span class="k">Dishes</span><span class="v num">${countItems(S)}</span></div>
+          <div><span class="k">Signature plates</span><span class="v num">${S.mustTry.length}</span></div>
+        </div>
+
+        <div class="grid" style="gap:10px">
+          <button class="btn btn-primary" id="pubBtn" ${(!YoloData.hasCloud || !signedIn) ? "disabled" : ""}>
+            ${ICON.down} Publish to Supabase</button>
+          <button class="btn" id="dlBtn">${ICON.down} Download data/site.json</button>
+        </div>
+        ${(!YoloData.hasCloud || !signedIn) ? `<p class="hint" style="margin-top:10px">${
+          !YoloData.hasCloud ? "Connect Supabase in <code>assets/js/yolo-config.js</code> to turn this on."
+                             : "Sign in to publish to the cloud."}</p>` : ""}
+      </div>
+
+      <div class="grid" style="gap:16px">
+        <div class="card">
+          <h2>Load a backup</h2>
+          <p class="desc">Bring back a <code>site.json</code> you saved earlier. This replaces everything on screen — publish afterwards to make it live.</p>
+          <input type="file" id="upFile" accept="application/json,.json" hidden>
+          <button class="btn" id="upBtn">Choose a site.json file…</button>
+        </div>
+        <div class="card">
+          <h2>Start the website over</h2>
+          <p class="desc">Throws away your local draft and reloads whatever the website is serving right now.</p>
+          <button class="btn btn-danger" id="resetBtn">Discard my draft</button>
+        </div>
+      </div>
+    </div>`;
+
+  $("#pubBtn") && ($("#pubBtn").onclick = publishNow);
+  $("#dlBtn").onclick = download;
+  $("#upBtn").onclick = () => $("#upFile").click();
+  $("#upFile").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!d.menu) throw new Error("That file has no menu in it.");
+      S = normalise(d); markChanged(); draw();
+      toast("Backup loaded. Publish it to go live.");
+    } catch (ex){ toast(ex.message || "Could not read that file.", "bad"); }
+  };
+  $("#resetBtn").onclick = discard;
+}
+
+async function publishNow(){
+  const bad = configErrors();
+  if (bad.length){
+    go("set");
+    return toast("Fix this first: " + bad[0].msg, "bad");
+  }
+  const btns = $$("#pubBtn, #publishQuick");
+  btns.forEach(b => { b.disabled = true; });
+  const label = $("#pubBtn") ? $("#pubBtn").innerHTML : "";
+  if ($("#pubBtn")) $("#pubBtn").textContent = "Publishing…";
+  try {
+    await YoloData.publish(S);
+    baseline = JSON.stringify(S);
+    try { localStorage.removeItem(DRAFT); } catch(e){}
+    markChanged();
+    $("#savedAt").textContent = "Published " + new Date().toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit"});
+    toast("Published. The website is live with your changes.");
+    draw();
+  } catch (ex){
+    toast(ex.message || "Publish failed.", "bad");
+  } finally {
+    btns.forEach(b => { b.disabled = false; });
+    if ($("#pubBtn")) $("#pubBtn").innerHTML = label;
+  }
+}
+
+function download(){
+  const out = {config:S.config, menu:S.menu.map(c => ({
+      id:c.id, name:c.name, ...(c.hi?{hi:c.hi}:{}), ...(c.sub?{sub:c.sub}:{}),
+      items:c.items.map(it => ({ n:it.n, ...(it.d?{d:it.d}:{}), p:it.p,
+        ...(it.tags && it.tags.length?{tags:it.tags}:{}), ...(it.img?{img:it.img}:{}) }))
+    })), photos:photoMap(), mustTry:S.mustTry};
+  const blob = new Blob([JSON.stringify(out, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "site.json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast("site.json downloaded. Upload it into the data/ folder on your hosting.");
+}
+function photoMap(){
+  const m = {};
+  S.menu.forEach(c => c.items.forEach(it => { if (it.img) m[it.n] = it.img; }));
+  return m;
+}
+
+async function discard(){
+  if (!await confirmBox("Throw away your draft?",
+      "Everything you changed since the last publish is lost, and the live menu is loaded again. This cannot be undone.",
+      "Discard my draft")) return;
+  try { localStorage.removeItem(DRAFT); } catch(e){}
+  location.reload();
+}
+
+$("#discardBtn").onclick = discard;
+$("#publishQuick").onclick = () => {
+  if (YoloData.hasCloud && signedIn) return publishNow();
+  go("pub");
+  toast(YoloData.hasCloud ? "Sign in to publish to the cloud." : "Download site.json to publish.", "bad");
+};
+
+addEventListener("beforeunload", e => {
+  if (dirty()){ e.preventDefault(); e.returnValue = ""; }
+});
+
+/* Esc closes whatever is open; Ctrl/Cmd+S publishes. */
+addEventListener("keydown", e => {
+  if (e.key === "Escape"){
+    if (modalClose) return;                       // the dialog handles its own Esc
+    if ($("#side").classList.contains("open")){
+      $("#side").classList.remove("open"); $("#scrim").classList.remove("show"); return;
+    }
+    if (openItem){ openItem = null; if (currentView === "menu") viewMenu(); }
+    return;
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s"){
+    e.preventDefault();
+    if (dirty()) $("#publishQuick").click();
+  }
+});
+</script>
+</body>
+</html>
