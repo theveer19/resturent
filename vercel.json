@@ -1,5 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "menu.yollo.co.in"
+        }
+      ],
+      "destination": "/menu/",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/admin/(.*)",
@@ -57,48 +70,6 @@
           "value": "SAMEORIGIN"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "menu.yollo.co.in"
-        }
-      ],
-      "destination": "/menu/index.html"
-    },
-    {
-      "source": "/index.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "menu.yollo.co.in"
-        }
-      ],
-      "destination": "/menu/index.html"
-    },
-    {
-      "source": "/menu",
-      "has": [
-        {
-          "type": "host",
-          "value": "menu.yollo.co.in"
-        }
-      ],
-      "destination": "/menu/index.html"
-    },
-    {
-      "source": "/menu/",
-      "has": [
-        {
-          "type": "host",
-          "value": "menu.yollo.co.in"
-        }
-      ],
-      "destination": "/menu/index.html"
     }
   ]
 }
