@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Table QR · YOLO Eats</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --brand:#FDFB06; --black:#0B0B0B;
+  --bg:#0B0B0B; --panel:#141413; --panel-2:#1C1C1A; --raise:#24241F;
+  --line:#2C2C27; --line-2:#3A3A33;
+  --text:#F4F1E9; --text-2:#A9A69D; --text-3:#726F67;
+  --ok:#4ADE80; --bad:#F87171;
+  --font:"Bricolage Grotesque","Segoe UI",system-ui,-apple-system,sans-serif;
+  --ease:cubic-bezier(.2,.75,.2,1);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding-block:0 60px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:8px}
+.wrap{max-width:1040px;margin:0 auto}
+
+header.bar{display:flex;align-items:center;gap:12px;padding-block:18px 20px;border-bottom:1px solid var(--line);margin-bottom:26px}
+header.bar img{width:36px;height:36px}
+header.bar b{display:block;font-size:16px;line-height:1.2}
+header.bar span{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+header.bar .back{margin-left:auto;font-size:13.5px;color:var(--text-2);text-decoration:none}
+header.bar .back:hover{color:var(--text)}
+
+.grid{display:grid;gap:18px}
+@media (min-width:880px){.grid{grid-template-columns:minmax(0,1fr) 360px;align-items:start}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.card h2{margin:0 0 4px;font-size:16px;font-weight:600}
+.card .desc{margin:0 0 18px;font-size:13px;color:var(--text-3);line-height:1.5}
+
+.field{display:grid;gap:6px;margin-bottom:15px}
+.field label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+.field .hint{font-size:12px;color:var(--text-3)}
+input[type=text],select{width:100%;height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--line-2);
+  background:var(--panel-2);transition:border-color .18s}
+input:focus,select:focus{outline:none;border-color:var(--brand);background:#1F1F1B}
+select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23A9A69D' stroke-width='2' stroke-linecap='round'><path d='m4 6 4 4 4-4'/></svg>");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.check{display:inline-flex;align-items:center;gap:9px;font-size:14px;cursor:pointer;user-select:none}
+.check input{width:17px;height:17px;accent-color:var(--brand);cursor:pointer}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;border-radius:10px;
+  border:1px solid var(--line-2);background:var(--raise);font-size:14px;font-weight:600;white-space:nowrap;
+  text-decoration:none;transition:background .18s,border-color .18s}
+.btn:hover{background:#2E2E28;border-color:#4A4A41}
+.btn-primary{background:var(--brand);border-color:var(--brand);color:var(--black);font-weight:700}
+.btn-primary:hover{background:#FFFE4D;border-color:#FFFE4D}
+.btns{display:grid;gap:9px}
+
+.preview{display:grid;place-items:center;padding:22px;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;min-height:300px}
+#qrCanvas{width:260px;height:260px;max-width:100%;border-radius:10px;background:#fff}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:14px;color:var(--text-3)}
+.status i{width:7px;height:7px;border-radius:99px;background:var(--ok);flex:none}
+.status.err i{background:var(--bad)}
+
+.tips{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:13px;color:var(--text-2);line-height:1.55}
+.tips li{display:flex;gap:9px}
+.tips li::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:var(--line-2);margin-top:8px}
+
+/* ------------------------------------------------------- the table tent */
+.sheet{margin-top:26px}
+.sheet h2{margin:0 0 4px;font-size:16px;font-weight:600}
+.sheet .desc{margin:0 0 16px;font-size:13px;color:var(--text-3)}
+#tents{display:grid;gap:14px;justify-content:center}
+#tents.n1{grid-template-columns:1fr}
+#tents.n2{grid-template-columns:1fr}
+#tents.n4{grid-template-columns:1fr 1fr}
+
+.tent{width:100%;max-width:330px;aspect-ratio:3/4;background:var(--black);border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:22px 18px;text-align:center;color:#F4F1E9;border:1px solid #262626}
+.tent .logo{width:52px;height:52px}
+.tent .kicker{font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--brand);margin-top:9px}
+.tent h3{margin:5px 0 0;font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.tent h3 em{font-style:normal;color:var(--brand)}
+.tent .qbox{background:#fff;border-radius:12px;padding:9px;line-height:0;margin-block:12px}
+.tent .qbox img{width:134px;height:134px;display:block}
+.tent p{margin:0;font-size:11.5px;color:#A8A49B;line-height:1.5}
+.tent .url{margin-top:6px;font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--brand);word-break:break-all}
+
+@media print{
+  @page{size:A4;margin:10mm}
+  body{background:#fff;padding:0}
+  header.bar,.grid,.sheet .desc,.sheet h2,.noprint{display:none!important}
+  .sheet{margin:0}
+  #tents{gap:8mm}
+  #tents.n1{grid-template-columns:1fr}
+  #tents.n2{grid-template-columns:1fr 1fr}
+  #tents.n4{grid-template-columns:1fr 1fr}
+  .tent{max-width:none;border:1px dashed #bbb;border-radius:10px;break-inside:avoid;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="bar">
+    <img src="../assets/logo.png" alt="" width="1024" height="1024">
+    <div><b>Table QR</b><span>YOLO Eats</span></div>
+    <a class="back" href="./">&larr; Back to admin</a>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>The code</h2>
+      <p class="desc">This is a plain QR code — the web address is written into the pattern itself. It never expires and nothing can switch it off.</p>
+
+      <div class="field">
+        <label for="url">Web address</label>
+        <input type="text" id="url" value="https://menu.yollo.co.in" autocomplete="off" spellcheck="false">
+        <span class="hint">Change this only if the menu moves to a different address.</span>
+      </div>
+
+      <div class="field">
+        <label for="size">Download size</label>
+        <select id="size">
+          <option value="1200">1200 × 1200 px — posters and table tents</option>
+          <option value="2000" selected>2000 × 2000 px — best for printing</option>
+          <option value="600">600 × 600 px — WhatsApp and screens</option>
+        </select>
+      </div>
+
+      <label class="check" style="margin-bottom:16px">
+        <input type="checkbox" id="useLogo" checked> Put the YOLO Eats logo in the middle
+      </label>
+
+      <div class="preview">
+        <canvas id="qrCanvas" width="2000" height="2000" aria-label="QR code preview"></canvas>
+      </div>
+      <div class="status" id="status"><i></i><span>Building…</span></div>
+    </div>
+
+    <div style="display:grid;gap:18px">
+      <div class="card">
+        <h2>Download</h2>
+        <p class="desc">Give the PNG to your printer, or drop it into a poster design.</p>
+        <div class="btns">
+          <button class="btn btn-primary" id="dlQr">Download the QR as PNG</button>
+          <button class="btn" id="printBtn">Print the table tents</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Before you print</h2>
+        <ul class="tips">
+          <li>Scan it yourself first, with two or three different phones.</li>
+          <li>Keep the printed code at least 3 cm wide, or phones struggle.</li>
+          <li>Leave white space around the code — don't crop right to the edge.</li>
+          <li>Matte paper or lamination scans better than glossy, which reflects light.</li>
+          <li>Print on card and fold, or slide the tent into a stand.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <section class="sheet">
+    <h2>Table tents</h2>
+    <p class="desc">Ready to print. Pick how many fit on one A4 sheet, then press Print.</p>
+    <div class="field noprint" style="max-width:260px">
+      <label for="perPage">Tents per A4 page</label>
+        <select id="perPage">
+          <option value="1">1 — large</option>
+          <option value="2" selected>2 — side by side</option>
+          <option value="4">4 — small</option>
+        </select>
+    </div>
+    <div id="tents" class="n2"></div>
+  </section>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const canvas = $("#qrCanvas"), ctx = canvas.getContext("2d");
+
+let logoImg = null, logoReady = false;
+const logo = new Image();
+logo.onload = () => { logoImg = logo; logoReady = true; build(); };
+logo.onerror = () => { logoReady = true; build(); };     // carry on without it
+logo.src = "../assets/logo.png";
+
+function setStatus(msg, bad){
+  const el = $("#status");
+  el.classList.toggle("err", !!bad);
+  el.querySelector("span").textContent = msg;
+}
+
+/* Draws the QR at any resolution. Error correction is set to H (the highest),
+   which can lose about 30% of the pattern — that is what lets the logo sit in
+   the middle without breaking the scan. */
+function build(){
+  const url = $("#url").value.trim();
+  const size = +$("#size").value;
+  const withLogo = $("#useLogo").checked;
+
+  if (!url){ setStatus("Type a web address first.", true); return; }
+
+  if (typeof qrcode === "undefined"){
+    setStatus("The QR library did not load. Check the internet connection and reload this page.", true);
+    return;
+  }
+
+  let qr;
+  try {
+    qr = qrcode(0, "H");
+    qr.addData(url);
+    qr.make();
+  } catch (e){
+    setStatus("That address is too long for one QR code.", true);
+    return;
+  }
+
+  const count = qr.getModuleCount();
+  const quiet = 4;                                  // the white margin, in modules
+  const total = count + quiet * 2;
+  const scale = Math.floor(size / total);
+  const dim = scale * total;
+
+  canvas.width = dim; canvas.height = dim;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, dim, dim);
+  ctx.fillStyle = "#0B0B0B";
+  for (let r = 0; r < count; r++){
+    for (let c = 0; c < count; c++){
+      if (qr.isDark(r, c)){
+        ctx.fillRect((c + quiet) * scale, (r + quiet) * scale, scale, scale);
+      }
+    }
+  }
+
+  if (withLogo && logoImg){
+    // the brand roundel: a black disc with the yellow mark, ringed in white
+    const d = Math.round(dim * 0.23);
+    const x = (dim - d) / 2, y = (dim - d) / 2;
+    const cx = dim / 2, cy = dim / 2;
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.beginPath(); ctx.arc(cx, cy, d / 2 + scale * 1.6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#0B0B0B";
+    ctx.beginPath(); ctx.arc(cx, cy, d / 2, 0, Math.PI * 2); ctx.fill();
+
+    const inner = Math.round(d * 0.78);
+    ctx.drawImage(logoImg, cx - inner / 2, cy - inner / 2, inner, inner);
+  }
+
+  canvas.style.width = "260px"; canvas.style.height = "260px";
+  setStatus(`Ready · ${dim} × ${dim} px · highest error correction`);
+  paintTents();
+}
+
+/* ---------------------------------------------------------- table tents */
+function paintTents(){
+  const n = +$("#perPage").value;
+  const src = canvas.toDataURL("image/png");
+  const url = $("#url").value.trim().replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const box = $("#tents");
+  box.className = "n" + n;
+  box.innerHTML = Array.from({length: n}, () => `
+    <div class="tent">
+      <div>
+        <img class="logo" src="../assets/logo.png" alt="">
+        <div class="kicker">Pure Veg Kitchen</div>
+        <h3>Scan for the <em>menu</em></h3>
+      </div>
+      <div class="qbox"><img src="${src}" alt="QR code for the menu"></div>
+      <div>
+        <p>See every dish with prices,<br>then send your order on WhatsApp.</p>
+        <div class="url">${url}</div>
+      </div>
+    </div>`).join("");
+}
+
+/* ------------------------------------------------------------- download */
+$("#dlQr").addEventListener("click", () => {
+  canvas.toBlob(blob => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "yolo-eats-menu-qr.png";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }, "image/png");
+});
+
+$("#printBtn").addEventListener("click", () => window.print());
+
+["url", "size", "useLogo"].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.type === "checkbox" ? "change" : "input", build);
+  if (el.tagName === "SELECT") el.addEventListener("change", build);
+});
+$("#perPage").addEventListener("change", paintTents);
+
+build();
+</script>
+</body>
+</html>
